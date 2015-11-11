@@ -1,0 +1,43 @@
+instructions           ::= { instruction }
+instruction            ::= start | turn | move | verify
+start                  ::= "start", "(", number, "," number, ")"
+turn                   ::= "turn", "(", ( direction | until ), ")"
+direction              ::= relative | absolute
+relative               ::= left | right
+absolute               ::= north | south | east | west
+until                  ::= "until", "(", conditions, ")"
+conditions             ::= condition, { ",", condition }
+condition              ::= "is", "(", object-description, [ ",", orientation-definition ], ")"
+object-description     ::= object-name, [ "(" attribute, { ",", attribute } ")" ]
+attribute              ::= adjective | object-description
+orientation-definition ::= "at", "(", orientation, ")"
+orientation            ::= direction | [ direction, "," ], distance
+distance               ::= unit, "(", number, ")"
+move                   ::= "move", "(", ( distance | until ), ")"
+verify                 ::= "verify", "(", that, ")"
+that                   ::= "that", "(", conditions, ")"
+
+"Start at (0, 0) and face away from the blue wall. Walk five spaces and turn left. Keep going until you are in front of a green painting with a gold frame. Go away from the lamp until you are in front of a yellow door with an old, silver handle, that is two doors away from a potted-plant. There should now be a hallway with red carpet two spaces to your left."
+
+start(0, 0)
+turn(until(
+  is(wall(blue), at(south))
+))
+turn(until(
+  is(wall(blue), at(south))
+))
+move(spaces(5))
+turn(left)
+move(until(
+  is(painting(green, frame(gold)), at(north))
+))
+turn(until(
+  is(lamp, at(south))
+))
+move(until(
+  is(door(yellow, handle(old, silver)), at(north)),
+  is(plant(potted), at(doors(2)))
+))
+verify(that(
+  is(hallway(carpet(red)), at(left, spaces(2)))
+))
