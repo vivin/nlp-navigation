@@ -1,27 +1,30 @@
-face	N	#x.turn(to(x))
-left	S\NP	#x8.x8 @ left
-move	S/NP	#x58.move(x58)
-5	N/N	#x.distance(5,x)
-steps	N	steps
-you	NP	#x.x
-in	S/S	#x103.at(x103)
-front	N	north
-of	(S\NP)/NP	#x102.x102 @ #x.direction(x)
-your	NP/N	#x.direction(x)
-left	N	left
-on	S/NP	#x127.at(x127)
-yards	N	yards
-50	N/N	#x12.distance(50,x12)
-move	S/NP	#x58.move(x58)
-blue	S/NP	#x.x(blue)
-wall	N	wall
-going	S\NP	#x.x
-keep	N	until(x)
-until	(S\NP)\(S\NP)	#x34.x34 @ #x.move(x)
-from	((S\NP)\(S\NP))/NP	#x.#y.at(y,x)
-wall	N	wall
-blue	N/N	#x.x(blue)
-towards	(NP\NP)/NP	#x113.#x112.x112 @ until(x113,at(direction(north)))
-walk	N	#x.move(x)
+face	S/NP	#x.turn(x)
+left	NP	left
+two	NP/N	#x.x@two
+move	S/NP	#x.move(x)
+doors	N	#x.doors(x)
+wall	NP	#x.wall(x)
+wall	N	#x.wall(x)
+hall	N	#x.hall(x)
+lamp	N	lamp
+spaces	N	#x.spaces(x)
 the	NP/N	#x.x
-
+the	(NP/NP)/N	#x.x
+red	N/N	#x.x@red
+from	(NP\NP)/NP	#x.#y.until(is(x), y@south)
+away	NP	#x.at(x)
+plant	N	#x.plant(x)
+potted	N/N	#x.x @ potted
+with	NP/NP	#x.x
+carpet	N	#x.carpet(x)
+front	NP	front
+until	NP/NP	#x.until(x)
+walk	S/NP	#x.move(x)
+you	NP/NP	#x.x
+in	NP/NP	#x.at(x)
+of	((NP\NP)\NP)/NP	#x.#y.#z.z @ x, y
+are	NP	#x.is(x)
+in	NP/NP	#x.at(x)
+you	NP/NP	#x.x
+grey	N/N	#x.x @ grey
+front	NP	north

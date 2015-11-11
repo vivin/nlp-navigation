@@ -1,0 +1,61 @@
+away	NP	#x.at(x)	0.0
+south	NP	south	-1.0
+south	NP	#x.south(x)	-1.0
+south	NP	l(x,x)	-1.0
+north	NP	north	-1.0
+north	NP	#x.north(x)	-1.0
+north	NP	l(x,x)	-1.0
+hall	N	#x.hall(x)	0.0
+turn	S/NP	#x355.turn(x355)	-1.0
+turn	S/NP	l(x,x)	-1.0
+two	NP/N	#x.x @ two	0.0
+three	NP/N	#x357.x357 @ three	-1.0
+red	N/N	#x.x @ red	0.0
+east	N	east	-1.0
+are	NP	#x.is(x)	0.0
+are	NP	are	-1.0
+are	NP	#x.are(x)	-1.0
+are	NP	l(x,x)	-1.0
+of	((NP\NP)\NP)/NP	#x.#y.#z.z @ x , y	0.0
+of	((NP\NP)\NP)/NP	l(x,x)	-1.0
+west	N	west	-1.0
+from	(NP\NP)/NP	#x.#y.until(is(x),y @ south)	0.0
+five	NP/N	#x358.x358 @ five	-1.0
+you	NP/NP	#x.x	0.0
+you	NP/NP	#x.you(x)	-1.0
+you	NP/NP	l(x,x)	-1.0
+move	S/NP	#x.move(x)	0.0
+in	NP/NP	#x.at(x)	0.0
+in	NP/NP	#x.x	-1.0
+in	NP/NP	#x.in(x)	-1.0
+in	NP/NP	l(x,x)	-1.0
+lamp	N	lamp	0.0
+right	NP	right	-1.0
+right	NP	#x.right(x)	-1.0
+right	NP	l(x,x)	-1.0
+steps	N	#x356.steps(x356)	-1.0
+potted	N/N	#x.x @ potted	0.0
+grey	N/N	#x.x @ grey	0.0
+grey	N/N	l(x,x)	-1.0
+doors	N	#x.doors(x)	0.0
+the	NP/N	#x.x	0.0
+the	NP/N	#x357.x357 @ the	-1.0
+the	NP/N	l(x,x)	-1.0
+the	(NP/NP)/N	#x.x	0.0
+with	NP/NP	#x.x	0.0
+face	S/NP	#x.turn(x)	0.0
+blue	N/N	#x360.x360 @ blue	-1.0
+left	NP	left	0.0
+plant	N	#x.plant(x)	0.0
+carpet	N	#x.carpet(x)	0.0
+spaces	N	#x.spaces(x)	0.0
+until	NP/NP	#x.until(x)	0.0
+until	NP/NP	l(x,x)	-1.0
+front	NP	front	0.0
+front	NP	#x.front(x)	-1.0
+front	NP	l(x,x)	-1.0
+wall	NP	#x.wall(x)	0.0
+wall	N	#x.wall(x)	0.0
+walk	S/NP	#x.move(x)	0.0
+walk	S/NP	#x355.walk(x355)	-1.0
+walk	S/NP	l(x,x)	-1.0

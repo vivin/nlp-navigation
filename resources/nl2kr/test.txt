@@ -1,4 +1,0 @@
-face left.
-move towards the blue wall.
-face north.
-walk until you see the yellow door. 
