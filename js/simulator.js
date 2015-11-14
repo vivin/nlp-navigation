@@ -22,14 +22,23 @@ var world = (function () {
     var objects = {
         W: {
             name: "wall",
+            path: false,
+            space: false,
+            reference: true,
             attributes: ["red", "blue", "green", "yellow", "grey"]
         },
         D: {
             name: "door",
+            path: false,
+            space: false,
+            reference: true,
             attributes: ["main", "open", "locked", "glass", "steel", "red"]
         },
         P: {
             name: "painting",
+            path: false,
+            space: false,
+            reference: true,
             attributes: ["old", "abstract", "classic", "modern"]
         },
         w: {
@@ -38,6 +47,9 @@ var world = (function () {
         },
         "~": {
             name: "hallway",
+            path: true,
+            space: true,
+            reference: true,
             attributes: [{
                 name: "carpet",
                 attribute: "red"
@@ -49,14 +61,19 @@ var world = (function () {
         PP: {
             name: "plant",
             attribute: "potted",
+            path: false,
+            space: false,
             reference: true
         },
         LL: {
             name: "lamp",
             attribute: null,
+            path: false,
+            space: false,
             reference: true
         },
         XX: {
+            path: false,
             space: true,
             reference: false
         }
@@ -78,7 +95,8 @@ var world = (function () {
             } else {
                 row.push({
                     path: true,
-                    space: true
+                    space: true,
+                    reference: false
                 });
             }
 
@@ -113,6 +131,40 @@ var world = (function () {
             },
             west: function () {
                 return location(row, column - 1 < 0 ? 0 : column - 1);
+            },
+            clone: function () {
+                return location(row, column);
+            },
+            compare: function (other) {
+                if(other.row > row) {
+                    return {
+                        absolute: "south",
+                        relative: "behind",
+                        coincident: false
+                    };
+                } else if(other.row < row) {
+                    return {
+                        absolute: "north",
+                        relative: "front",
+                        coincident: false
+                    };
+                } else if (other.column > column) {
+                    return {
+                        absolute: "east",
+                        relative: "right",
+                        coincident: false
+                    };
+                } else if (other.column < column) {
+                    return {
+                        absolute: "west",
+                        relative: "left",
+                        coincident: false
+                    };
+                } else {
+                    return {
+                        coincident: true
+                    };
+                }
             }
         };
     }
@@ -154,7 +206,7 @@ var world = (function () {
             return grid[location.row][location.column];
         },
         isBlocked: function (location) {
-            return grid[location.row][location.column].reference || false;
+            return grid[location.row][location.column].reference && !grid[location.row][location.column].path;
         },
         location: location,
         render: render
@@ -241,7 +293,6 @@ var robot = (function (world) {
             }));
 
             if(!result.successful) {
-                console.log(result);
                 throw result.message;
             }
 
@@ -854,21 +905,50 @@ var robot = (function (world) {
         var sensorData = {
             orientation: orientation,
             immediate: immediateScan(location),
-            lineOfSight: {}
+            lineOfSight: {
+                north: {
+                    objects: [],
+                    turnPoints: []
+                },
+                south: {
+                    objects: [],
+                    turnPoints: []
+                },
+                east: {
+                    objects: [],
+                    turnPoints: []
+                },
+                west: {
+                    objects: [],
+                    turnPoints: []
+                }
+            }
         };
 
         ["north", "south", "east", "west"].forEach(function (absoluteDirection) {
-            sensorData.lineOfSight[absoluteDirection] = [];
-
             var currentLocation = location[absoluteDirection]();
             while (!world.isBlocked(currentLocation)) {
-                sensorData.lineOfSight[absoluteDirection] = sensorData.lineOfSight[absoluteDirection].concat(immediateScan(currentLocation));
+                var scanData = immediateScan(currentLocation);
+                var turnPointPaths = scanData.paths.filter(function(path) {
+                    return absoluteDirection !== path && absoluteDirection !== oppositeAbsolute[path];
+                });
+
+                sensorData.lineOfSight[absoluteDirection].objects = sensorData.lineOfSight[absoluteDirection].objects.concat(scanData.objects);
+                if(turnPointPaths.length > 0) {
+                    sensorData.lineOfSight[absoluteDirection].turnPoints = sensorData.lineOfSight[absoluteDirection].turnPoints.concat({
+                        location: currentLocation.clone(),
+                        paths: turnPointPaths
+                    });
+                }
+
                 currentLocation = currentLocation[absoluteDirection]();
             }
         });
 
         function immediateScan(location) {
             var objects = [];
+            var paths = [];
+
             ["north", "south", "east", "west"].forEach(function (absoluteDirection) {
                 var currentLocation = location[absoluteDirection]();
                 if (world.objectAt(currentLocation).reference) {
@@ -886,7 +966,17 @@ var robot = (function (world) {
                 }
             });
 
-            return objects;
+            ["north", "south", "east", "west"].forEach(function (absoluteDirection) {
+                var currentLocation = location[absoluteDirection]();
+                if (world.objectAt(currentLocation).path) {
+                    paths.push(absoluteDirection);
+                }
+            });
+
+            return {
+                objects: objects,
+                paths: paths
+            }
         }
 
         return sensorData;
@@ -900,6 +990,10 @@ var robot = (function (world) {
                 console.warn("That location is not empty");
             } else {
                 location = world.location(row, column);
+
+                var rect = world.objectAt(location).cell.getBoundingClientRect();
+                dalek.style.top = rect.top + "px";
+                dalek.style.left = rect.left + "px";
             }
         },
         turn: function (direction) {
@@ -946,7 +1040,6 @@ var robot = (function (world) {
         },
         scan: scan,
         render: function () {
-            console.log(dalek);
             if(dalek == null) {
                 dalek = document.createElement("div");
 
