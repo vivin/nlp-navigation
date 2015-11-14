@@ -1,0 +1,1 @@
+face away from the blue wall	turn(until(is(wall(blue), at(south))))
