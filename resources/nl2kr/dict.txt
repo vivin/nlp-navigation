@@ -11,8 +11,8 @@ spaces	N	#x.spaces(x)
 the	NP/N	#x.x
 the	(NP/NP)/N	#x.x
 red	N/N	#x.x@red
-from	(NP\NP)/NP	#x.#y.until(is(x), y@south)
-away	NP	#x.at(x)
+away	NP/(NP\NP)	#x.until(x @ at(south))
+from	(NP\NP)/NP	#x.#y.is(x,y)
 plant	N	#x.plant(x)
 potted	N/N	#x.x @ potted
 with	NP/NP	#x.x
@@ -28,3 +28,4 @@ in	NP/NP	#x.at(x)
 you	NP/NP	#x.x
 grey	N/N	#x.x @ grey
 front	NP	north
+blue	N/N	#x.x @ blue
