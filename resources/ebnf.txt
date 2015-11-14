@@ -7,9 +7,9 @@ relative               ::= left | right
 absolute               ::= north | south | east | west
 until                  ::= "until", "(", conditions, ")"
 conditions             ::= condition, { ",", condition }
-condition              ::= "is", "(", object-description, [ ",", orientation-definition ], ")"
-object-description     ::= object-name, [ "(" attribute, { ",", attribute } ")" ]
-attribute              ::= adjective | object-description
+condition              ::= "is", "(", object, [ ",", orientation-definition ], ")"
+object                 ::= object-name, [ "(" attribute, { ",", attribute } ")" ]
+attribute              ::= adjective | object
 orientation-definition ::= "at", "(", orientation, ")"
 orientation            ::= direction | [ direction, "," ], distance
 distance               ::= unit, "(", number, ")"
@@ -31,7 +31,6 @@ turn(left)
 move(until(
   is(painting(green, frame(gold)), at(north))
 ))
-
 turn(until(
   is(lamp, at(south))
 ))
@@ -42,3 +41,12 @@ move(until(
 verify(that(
   is(hallway(carpet(red)), at(left, spaces(2)))
 ))
+
+start(0, 0)
+turn(until(is(wall(blue),at(south))))
+move(spaces(5))
+turn(left)
+move(until(is(painting(green,frame(gold)),at(north))))
+turn(until(is(lamp,at(south))))
+move(until(is(door(yellow,handle(old,silver)),at(north)),is(plant(potted),at(doors(2)))))
+verify(that(is(hallway(carpet(red)),at(left,spaces(2)))))
