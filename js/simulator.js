@@ -1052,15 +1052,18 @@ var robot = (function (world) {
 
             dalek.style.transform = "rotate" + "(" + rotation + "deg)";
         },
-        move: function () {
-            if (!world.isBlocked(location[orientation]())) {
-                location = location[orientation]();
+        move: function (distance) {
+            distance = distance || 1;
+            for(var i = 0; i < distance; i++) {
+                if (!world.isBlocked(location[orientation]())) {
+                    location = location[orientation]();
 
-                var rect = world.objectAt(location).cell.getBoundingClientRect();
-                dalek.style.top = rect.top + "px";
-                dalek.style.left = rect.left + "px";
-            } else {
-                console.warn("Cannot move! Way is blocked!");
+                    var rect = world.objectAt(location).cell.getBoundingClientRect();
+                    dalek.style.top = rect.top + "px";
+                    dalek.style.left = rect.left + "px";
+                } else {
+                    throw new RangeError("Robot crashed into the wall :(");
+                }
             }
         },
         orientation: function () {
