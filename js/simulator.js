@@ -976,10 +976,41 @@ var robot = (function (world) {
             return {
                 objects: objects,
                 paths: paths
-            }
+            };
         }
 
         return sensorData;
+    }
+
+    function generatePath() {
+        var path = [world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)]];
+
+        var size = Math.floor(Math.random() * 3) + 3;
+        var start = path[0];
+
+        var scanData = scan(start);
+
+        console.log(scanData.lineOfSight);
+        var availableTurnPoints = Object.keys(scanData.lineOfSight).reduce(function(availableTurnPoints, direction) {
+            if(scanData.lineOfSight[direction].turnPoints.length > 0) {
+                availableTurnPoints[direction] = scanData.lineOfSight[direction].turnPoints;
+            }
+
+            return availableTurnPoints;
+        }, {});
+
+        var randomDirection = Object.keys(availableTurnPoints)[Math.floor(Math.random() * Object.keys(availableTurnPoints).length)];
+        var randomTurnPoint = availableTurnPoints[randomDirection][Math.floor(Math.random() * availableTurnPoints[randomDirection].length)].location;
+
+        var conditional = Math.floor(Math.random() * 2) === 1;
+        if(!conditional) {
+            return {
+                location: randomTurnPoint,
+                type: "absolute"
+            };
+        }
+
+        console.log(randomTurnPoint);
     }
 
     return {
@@ -1063,6 +1094,7 @@ var robot = (function (world) {
             }
         },
         parse: parser.parse,
+        generatePath: generatePath,
         direction: {
             absolute: absolute,
             relative: relative
