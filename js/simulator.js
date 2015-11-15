@@ -1056,6 +1056,8 @@ var robot = (function (world) {
                 var rect = world.objectAt(location).cell.getBoundingClientRect();
                 dalek.style.top = rect.top + "px";
                 dalek.style.left = rect.left + "px";
+                dalek.style.height = rect.height + "px";
+                dalek.style.width = rect.width + "px";
 
                 document.body.appendChild(dalek);
             }
