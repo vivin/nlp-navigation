@@ -1,8 +1,64 @@
 var simulation = (function(){
-    //var sentence = 'start(3,1)';
-    //var sentence = 'turn(until(is(plant(plotted),at(left))))';
-    //var sentence = 'turn(left)'
-    //var sentence = 'move(spaces(5))'
+    function scanAndCheck(until){
+        var flag=false
+        scan = robot.scan()
+        until.forEach(function (condition) {
+            var direction = condition.orientation.direction
+            var distance = condition.orientation.distance
+            if (direction!=null){
+                for (i=0;i<scan.immediate.objects.length;i++){
+                    object = scan.immediate.objects[i]
+
+                    if (( object.position.absolute === direction || object.position.relative === direction)
+                        && object.name === condition.object.name ) {
+                        if (typeof (object.attribute) === 'string') {
+                            if ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
+                                flag = true
+                                break
+                            }
+                        }
+                        else{
+                            if ( typeof(condition.object.attributes[0]) != 'undefined') {
+                                if(condition.object.attributes[0].name === object.attribute.name
+                                    && condition.object.attributes[0].attributes[0] == object.attribute.attribute ) {
+                                    flag = true
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (distance!=null){
+                for(i=0;i<scan.lineOfSight[direction].lenqth;i++) {
+                    object = scan.lineOfSight[direction][i]
+                    forEach(function(object){
+                        if (( object.position.absolute === direction || object.position.relative === direction) &&
+                                object.name === condition.object.name){
+                            if (typeof (object.attribute) === 'string') {
+                                if ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
+                                    flag = true
+                                    break
+                                }
+                            }
+                            else{
+                                if ( typeof(condition.object.attributes[0]) != 'undefined') {
+                                    if(condition.object.attributes[0].name === object.attribute.name
+                                        && condition.object.attributes[0].attributes[0] == object.attribute.attribute ) {
+                                        flag = true
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+
+
+            }
+        });
+        return flag
+    }
     function simulate(sentence) {
         if (sentence.length != 0) {
             var object = parser.parse(sentence).forEach(function (element) {
@@ -16,36 +72,10 @@ var simulation = (function(){
                     else if (element.arguments.until != null) {
                         numberOfTurns = 0
                         do {
-                            var allTrue = false
-                            scan = robot.scan()
-                            element.arguments.until.forEach(function (condition) {
-                                if (condition.orientation.direction!=null){
-                                    for (i=0;i<scan.immediate.objects.length;i++){
-                                        object = scan.immediate.objects[i]
-                                        if (object.position.relative === condition.orientation.direction &&
-                                            object.name === condition.object.name ) {
-                                            if (typeof (object.attribute) === 'string') {
-                                                if (condition.object.attributes[0] == object.attribute) {
-                                                    allTrue = true
-                                                    break
-                                                }
-                                            }
-                                            else{
-                                                    if (condition.object.attributes[0] ===
-                                                        object.attribute.attribute.concat(' ').concat(object.attribute.attribute.name)) {
-                                                        allTrue = true
-                                                        break
-                                                    }
-                                                }
-                                        }
-                                            }
-                                        }
-                                    });
-                            if (allTrue) break;
+                            if (scanAndCheck(element.arguments.until)) break;
                             else robot.turn('left')
                             numberOfTurns +=1
                         }while (numberOfTurns<4)
-                                //if(condition.object === world.objectAt(robot.location()))
                     }
                 }
                 if (action === 'move') {
@@ -55,7 +85,19 @@ var simulation = (function(){
                             robot.move(element.arguments.distance.magnitude)
                         }
                         else
-                            until(action,objects)
+                            do{
+                                if(scanAndCheck(element.arguments.until)) break;
+                                else{
+                                     robot.move()
+                                }
+                            }while(true)
+                    }
+                }
+                if(action === 'verify'){
+                    var scan = robot.scan()
+                    if (element.arguments.that != null) {
+                        if(!scanAndCheck(element.arguments.that))
+                            throw new Error('Location not matched')
                     }
                 }
             });
