@@ -914,9 +914,14 @@ var world = (function () {
     };
 })();
 
+String.prototype.interpolate = function() {
+    var values = arguments;
+    return this.replace(/\{([0-9])\}/g, function($0, $1) {
+        return values[$1];
+    });
+};
 
 var robot = (function (world) {
-
     var dalek = null;
 
     var location = world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)];
@@ -1046,12 +1051,14 @@ var robot = (function (world) {
                 var randomDirection = Object.keys(availableTurnPoints)[Math.floor(Math.random() * Object.keys(availableTurnPoints).length)];
                 var randomTurnPoint = availableTurnPoints[randomDirection][Math.floor(Math.random() * availableTurnPoints[randomDirection].length)].location;
 
-                var conditional =  false;//Math.floor(Math.random() * 2) === 1;
+                var conditional =  true;//Math.floor(Math.random() * 2) === 1;
                 if(!conditional) {
                     path.push({
                         location: randomTurnPoint,
                         type: "absolute"
                     });
+                } else {
+                    var objectsAtLocation;
                 }
 
                 lastDirection = path[i - 1].location.compare(randomTurnPoint).absolute;
