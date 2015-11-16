@@ -762,14 +762,14 @@ var world = (function () {
         "W3  W4XXXXXXXXW4  W2W2W2W2  W1" +
         "W3  W4LLW4XXXXD5  ~0~0~0~0  W1" +
         "W3      W4XXXXW4  W0W0W0W0  W1" +
-        "W3W3W3  W4XXXXW4  W0XXXXW0  W1" +
+        "W3LLW3  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXW3  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXP0  W4XXXXD3  W0XXXXD4  P1" +
         "XXXXW3  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXD2  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXW3  W4W4D1W4  W0W0W0W0  W1" +
         "XXXXW3                      W1" +
-        "XXXXW3W1W1W1W1W1D0W1W1W1W1W1W1";
+        "XXXXW3W1W1W1W1W1D0W1W1W1W1PPW1";
 
     var ROWS = 15;
     var COLUMNS = 15;
@@ -921,6 +921,15 @@ String.prototype.interpolate = function() {
     });
 };
 
+Array.range = function(start, end) {
+    var arr = [];
+    for(var i = start; i < end; i++) {
+        arr.push(i);
+    }
+
+    return arr;
+};
+
 var robot = (function (world) {
     var dalek = null;
 
@@ -1009,22 +1018,7 @@ var robot = (function (world) {
     }
 
     function generatePath() {
-        var path = [{
-            location: world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)],
-            type: "absolute"
-        }];
-
-        var addedLocations = {};
-        addedLocations[path[0].location.toString()] = true;
-
-        var lastDirection = null;
-        var size = Math.floor(Math.random() * 3) + 3;
-        var done = false;
-        var i = 1;
-        do {
-            start(path[i - 1].location.row, path[i - 1].location.column);
-            var scanData = scan();
-
+        function findNextLocation(scanData, lastDirection) {
             var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function(candidateTurnPoints, direction) {
                 if(scanData.lineOfSight[direction].turnPoints.length > 0 &&
                     (lastDirection == null ||
@@ -1035,40 +1029,78 @@ var robot = (function (world) {
                 return candidateTurnPoints;
             }, {});
 
-            var availableTurnPoints = Object.keys(candidateTurnPoints).reduce(function(availableTurnPoints, direction) {
-                if(!candidateTurnPoints[direction].reduce(function(done, turnPoint) {
-                    return done && addedLocations[turnPoint.location.toString()];
-                }, true)) {
-                    availableTurnPoints[direction] = candidateTurnPoints[direction];
+            var randomDirection = Object.keys(candidateTurnPoints)[Math.floor(Math.random() * Object.keys(candidateTurnPoints).length)];
+            return candidateTurnPoints[randomDirection][Math.floor(Math.random() * candidateTurnPoints[randomDirection].length)].location;
+        }
+
+        function generateTurnReferences(scanData) {
+            var numTurnReferences = Math.floor(Math.random() * (scanData.immediate.objects.length - 1)) + 1;
+            return Array.range(0, numTurnReferences).map(function() {
+                var object = scanData.immediate.objects[Math.floor(Math.random() * scanData.immediate.objects.length)];
+                return {
+                    name: object.name,
+                    attribute: object.attribute,
+                    direction: object.position.absolute
+                };
+            });
+        }
+
+        function generateMoveOrVerifyReferences(scanData) {
+        }
+
+        var paths = [];
+        var lastDirection = null;
+        var size = Math.floor(Math.random() * 4) + 3;
+        var done = false;
+        var i = 0;
+        while(i < size && !done) {
+            var coordinate = {};
+
+            var isFirst = (i == 0);
+            var isLast = (i == (size - 1));
+            var randomLocation = isFirst ? world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)] : null;
+            var previousLocation = isFirst ? null : paths[i - 1].location;
+            var scanLocation = isFirst ? randomLocation : previousLocation;
+
+            start(scanLocation.row, scanLocation.column);
+            var scanData = scan();
+
+            coordinate.location = isFirst ? randomLocation : findNextLocation(scanData, lastDirection);
+
+            if(!isLast) {
+                coordinate.turnSource = {
+                    type: Math.floor(Math.random() * 2) === 1 ? "conditional": "unconditional",
+                    useRelativeDirection: Math.floor(Math.random() * 2) === 1
+                };
+
+                if(coordinate.turnSource.type === "conditional") {
+                    coordinate.turnSource.references = generateTurnReferences(scanData);
                 }
-
-                return availableTurnPoints;
-            }, {});
-
-            done = Object.keys(availableTurnPoints).length == 0;
-
-            if(!done) {
-                var randomDirection = Object.keys(availableTurnPoints)[Math.floor(Math.random() * Object.keys(availableTurnPoints).length)];
-                var randomTurnPoint = availableTurnPoints[randomDirection][Math.floor(Math.random() * availableTurnPoints[randomDirection].length)].location;
-
-                var conditional =  true;//Math.floor(Math.random() * 2) === 1;
-                if(!conditional) {
-                    path.push({
-                        location: randomTurnPoint,
-                        type: "absolute"
-                    });
-                } else {
-                    var objectsAtLocation;
-                }
-
-                lastDirection = path[i - 1].location.compare(randomTurnPoint).absolute;
-                addedLocations[randomTurnPoint.toString()] = true;
             }
 
-            i++;
-        } while(i < size && !done);
+            if(!isLast && !isFirst) {
+                coordinate.moveDestination = {
+                    type:  Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
+                    useRelativeDirection:  Math.floor(Math.random() * 2) === 1
+                };
 
-        return path;
+                if(coordinate.moveDestination.type === "conditional") {
+                    coordinate.moveDestination.references = generateMoveOrVerifyReferences(scanData);
+                }
+            }
+
+            if(isLast) {
+                coordinate.verifyDestination = {
+                    useRelativeDirection: Math.floor(Math.random() * 2) === 1,
+                    references: generateMoveOrVerifyReferences(scanData)
+                };
+            }
+
+            paths.push(coordinate);
+            i++;
+        }
+
+        return paths;
     }
 
     function start(row, column) {
