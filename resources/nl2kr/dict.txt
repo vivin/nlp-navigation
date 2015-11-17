@@ -1,31 +1,28 @@
-face	S/NP	#x.turn(x)
-left	NP	left
-two	NP/N	#x.x@two
-move	S/NP	#x.move(x)
+are	NP	#x.x
+away	NP	at(south)
+blue	N/N	#x.x @ blue
+carpet	N	#x.carpet(x)
 doors	N	#x.doors(x)
-wall	NP	#x.wall(x)
-wall	N	#x.wall(x)
+face	S/NP	#x.turn(x)
+from	(NP\NP)/NP	#x.#y.until(is(x,y))
+front	NP	front
+grey	N/N	#x.x @ grey
+grey	N/N	#x.x @ grey
 hall	N	#x.hall(x)
 lamp	N	lamp
-spaces	N	#x.spaces(x)
-the	NP/N	#x.x
-the	(NP/NP)/N	#x.x
-red	N/N	#x.x@red
-away	NP/(NP\NP)	#x.until(x @ at(south))
-from	(NP\NP)/NP	#x.#y.is(x,y)
+left	NP	left
+move	S/NP	#x.move(x)
+of	(NP\NP)/NP	#x207.#x204.is(x207,x204)
 plant	N	#x.plant(x)
 potted	N/N	#x.x @ potted
-with	NP/NP	#x.x
-carpet	N	#x.carpet(x)
-front	NP	front
+red	N/N	#x.x@red
+spaces	N	#x.spaces(x)
+the	(NP/NP)/N	#x.x
+the	NP/N	#x.x
+two	NP/N	#x.x@two
 until	NP/NP	#x.until(x)
 walk	S/NP	#x.move(x)
+wall	N	#x.wall(x)
+wall	NP	#x.wall(x)
+with	NP/NP	#x.x
 you	NP/NP	#x.x
-in	NP/NP	#x.at(x)
-of	((NP\NP)\NP)/NP	#x.#y.#z.z @ x, y
-are	NP	#x.is(x)
-in	NP/NP	#x.at(x)
-you	NP/NP	#x.x
-grey	N/N	#x.x @ grey
-front	NP	north
-blue	N/N	#x.x @ blue

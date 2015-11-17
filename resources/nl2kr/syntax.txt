@@ -16,11 +16,11 @@ eight	NP/N
 nine	NP/N
 ten	NP/N
 steps	N
-away	NP/(NP\NP)
 from	(NP\NP)/NP
 the	(NP/NP)/N
 with	NP/NP
 walk	S/NP
+move    S/NP
 until	NP/NP
 you	NP/NP
 are	NP
