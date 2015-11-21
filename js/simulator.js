@@ -1008,6 +1008,35 @@ var robot = (function (world) {
         return sensorData;
     }
 
+    function genEnglish(paths) {
+        paths=generatePath();
+        var counter=paths.length;
+        var instruction=[];
+        var i=0;
+        var currentLocation=paths[0];
+        var orientation=locations.absolute.north;
+        while(counter>1) {
+            var nextLocation=paths[i+1];
+            var dir= currentLocation.location.compare(nextLocation.location,orientation);
+            if(nextLocation.type=="absolute") {
+                instruction.push("turn" + dir.absolute);
+                instruction.push("move" + dir.distance + "steps");
+                orientation = dir.absolute;
+                currentLocation = nextLocation;
+                i++;
+                counter--;
+            }
+            else{
+
+
+
+            }
+
+       }
+       console.log(instruction, paths.map(function(e) { return e.location.toString(); }));
+       return instruction;
+
+    }
     function generatePath() {
         var path = [{
             location: world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)],
@@ -1051,7 +1080,7 @@ var robot = (function (world) {
                 var randomDirection = Object.keys(availableTurnPoints)[Math.floor(Math.random() * Object.keys(availableTurnPoints).length)];
                 var randomTurnPoint = availableTurnPoints[randomDirection][Math.floor(Math.random() * availableTurnPoints[randomDirection].length)].location;
 
-                var conditional =  true;//Math.floor(Math.random() * 2) === 1;
+                var conditional =  false;//Math.floor(Math.random() * 2) === 1;
                 if(!conditional) {
                     path.push({
                         location: randomTurnPoint,
@@ -1158,7 +1187,8 @@ var robot = (function (world) {
             }
         },
         parse: parser.parse,
-        generatePath: generatePath
+        generatePath: generatePath,
+        genEnglish: genEnglish
     };
 
 })(world);
