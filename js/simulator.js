@@ -1017,7 +1017,117 @@ var robot = (function (world) {
 
         return sensorData;
     }
+    
+    function formal(array) {
+        paths=generatePath();
+        var result = [];
+        //var result1 = [];    
+        result.push("start("+paths[0].location.row+","+paths[0].location.column+")");
+        var orientation=locations.absolute.north;
+        //var orientation1=locations.absolute.north; 
+        
+        for (var i = 0; i < paths.length-1; i++) {
+            console.log(orientation);
+            var direction = paths[i].location.compare(paths[i+1].location,orientation);
+            //var direction1 = paths[i].location.compare(paths[i+1].location,orientation);    
+            //var xdist= array[i].row - array[i+1].row;
+            //var ydist= array[i].column - array[i+1].column;
+            if(paths[i].turnSource.type == "unconditional"){
+                if(paths[i].turnSource.useRelativeDirection)
+                {
+                    orientation=direction.absolute;
+                    result.push("turn("+direction.relative+")");      
+                    result.push("move(steps("+direction.distance+"))");
 
+                }
+                else
+                {
+                    orientation=direction.absolute;
+                    result.push("turn("+direction.absolute+")");      
+                    result.push("move(steps("+direction.distance+"))");                
+                }
+                
+           }
+            else
+            {
+             var outstring;    
+             outstring = checkattribute(paths[i].turnSource.reference,"turn");
+             result.push(outstring);
+                if(paths[i+1].moveDestination.type=="unconditional"){
+                    result.push("move(steps("+direction.distance+"))");                
+                }
+                else
+                {
+                     outstring = checkattribute(paths[i+1].moveDestination.reference,"move");
+                     result.push(outstring);
+
+                //result.push("move(until(is("+paths[i+1].moveDestination.reference.name+"("+paths[i+1].moveDestination.reference.attribute+"), at("+paths[i+1].moveDestination.reference.direction+"))))");
+                }
+                if(paths[i+1].verifyDestination)
+                {
+                        outstring = checkattribute(paths[i+1].verifyDestination.reference,"verify");
+                        result.push(outstring);
+
+                }
+                //var dist = paths[i+1].turnSource.reference.distance;    
+                //result.push("turn("+dir+")");      
+                //result.push("move(steps("+dist+"))");
+                orientation=direction.absolute;
+            }
+        }
+        
+            console.log(result, paths.map(function(e) { return e.location.toString(); }));
+            //console.log(result1, paths.map(function(e) { return e.location.toString(); }));
+            //fresult=[result,result1];
+            return result;
+
+        }
+    function checkattribute(references,type){
+        var output;
+    switch(type){
+        case "turn": if(references.attribute == null)
+                        {
+                            output="turn(until(is("+references.name+", at("+references.direction+"))))";
+                        }
+                     else if(typeof references.attribute === "string")
+                            {
+                                output="turn(until(is("+references.name+"("+references.attribute+"), at("+references.direction+"))))";
+                            }
+                     else   {
+                                output= "turn(until(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+"))))";        
+                            }
+                    break;
+        case "move": if(references.attribute == null)
+                        {
+                            output="move(until(is("+references.name+", at("+references.direction+"))))";
+                        }
+                     else if(typeof references.attribute === "string")
+                            {
+                                output="move(until(is("+references.name+"("+references.attribute+"), at("+references.direction+"))))";
+                            }
+                     else   {
+                                output= "move(until(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+"))))";        
+                            }
+                    break;
+        case "verify":
+            if(references.attribute == null)
+                        {
+                            output="verify(that(is("+references.name+", at("+references.direction+",spaces("+references.distance+")))))";
+                        }
+                     else if(typeof references.attribute === "string")
+                            {
+                                output="verify(that(is("+references.name+"("+references.attribute+"), at("+references.direction+",spaces("+references.distance+")))))";
+                            }
+                     else   {
+                                output= "verify(that(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+",spaces("+references.distance+")))))";        
+                            }
+                    break;
+            
+    }
+        return output;
+}
+
+        
     function generatePath() {
         function findNextLocation(scanData, lastDirection) {
             var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function(candidateTurnPoints, direction) {
@@ -1300,7 +1410,8 @@ var robot = (function (world) {
             }
         },
         parse: parser.parse,
-        generatePath: generatePath
+        generatePath: generatePath,
+        formal:formal
     };
 
 })(world);
