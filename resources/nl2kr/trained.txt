@@ -1,44 +1,80 @@
-away	NP	at(south)	1.3862944
-south	NP	south	0.6931472
-south	NP	#x.south(x)	-1.0
-south	NP	l(x,x)	-1.0
-north	NP	north	0.6931472
-north	NP	#x.north(x)	-1.0
-north	NP	l(x,x)	-1.0
+door	N	#x.door(x)	1.3862944
+door	NP	#x.door(x)	-1.0
 hall	N	#x.hall(x)	0.0
-turn	S/NP	#x49.turn(x49)	2.0794415
-turn	S/NP	l(x,x)	-1.0
-two	NP/N	#x.x @ two	0.0
-three	NP/N	#x51.x51 @ three	0.0
-red	N/N	#x.x @ red	0.0
-east	N	east	0.6931472
-are	NP	#x.x	0.0
-of	(NP\NP)/NP	#x207.#x204.is(x207,x204)	0.0
-west	N	west	0.6931472
+main	N/N	#x.x @ main	0.0
+main	N/N	l(x,x)	-1.0
+your	NP/N	#x.x	-1.0
+red	N/N	#x.x @ red	0.6931472
+west	N	west	1.0986123
 from	(NP\NP)/NP	#x.#y.until(is(x,y))	1.3862944
-five	NP/N	#x52.x52 @ five	0.0
-you	NP/NP	#x.x	0.0
-move	S/NP	#x.move(x)	0.6931472
-in	(NP\NP)/NP	#x56.#x55.x55 @ at(x56)	0.0
+you	NP/NP	#x.x	1.7917595
+glass	N/N	#x.x @ glass	-1.0
+in	(NP\NP)/NP	#x3125.#x3124.x3124 @ at(x3125)	1.0986123
+old	N/N	#x.x @ old	0.0
+is	N	#x293.x293	0.0
+is	N	#x497.#x496.is(x497,x496)	0.0
+steps	N	#x3119.steps(x3119)	0.0
+doors	N	#x.doors(x)	0.6931472
+2	NP/N	#x.x @ 2	0.0
+at	(NP\NP)/NP	#x.#y.y @ x	0.0
+3	NP/N	#x3120.x3120 @ 3	0.0
+left	N	left	1.0986123
+left	NP	left	0.6931472
+left	NP	#x.left(x)	-1.0
+left	NP	l(x,x)	-1.0
+5	NP/N	#x3121.x3121 @ 5	0.0
+carpet	N	#x.carpet(x)	0.0
+plant	N	#x.plant(x)	0.0
+spaces	N	#x.spaces(x)	-1.0
+steel	N/N	#x.x @ steel	0.0
+away	NP	at(south)	1.3862944
+south	N	south	0.6931472
+north	N	north	0.6931472
+yellow	N/N	#x3132.x3132 @ yellow	0.0
+turn	S/NP	#x3116.turn(x3116)	2.0794415
+turn	S/NP	l(x,x)	-1.0
+east	N	east	-1.0
+east	NP	east	0.6931472
+east	NP	#x.east(x)	-1.0
+east	NP	l(x,x)	-1.0
+modern	N/N	#x3135.x3135 @ old	0.0
+are	NP	#x.x	1.7917595
+of	(NP\NP)/NP	#x207.#x204.is(x207,x204)	1.7917595
+on	(NP\NP)/NP	#x232.at(x232)	-1.0
+move	S/NP	#x.move(x)	1.0986123
+go	S/NP	#x.move(x)	1.0986123
 lamp	N	lamp	0.0
+right	N	right	0.0
 right	NP	right	0.6931472
 right	NP	#x.right(x)	-1.0
 right	NP	l(x,x)	-1.0
-steps	N	#x50.steps(x50)	0.0
 grey	N/N	#x.x @ grey	0.0
 potted	N/N	#x.x @ potted	0.0
-doors	N	#x.doors(x)	0.0
-the	NP/N	#x.x	1.3862944
+the	NP/N	#x.at(x)	1.609438
+the	NP/N	#x.x	2.1972246
+the	NP/N	#x3121.x3121 @ the	-1.0
+the	NP/N	l(x,x)	-1.0
 the	(NP/NP)/N	#x.x	0.0
+the	(NP/NP)/N	#x.#y.y @ x	0.6931472
+the	(NP/NP)/N	l(x,x)	-1.0
 with	NP/NP	#x.x	0.0
 face	S/NP	#x.turn(x)	2.0794415
 blue	N/N	#x.x @ blue	0.0
-left	NP	left	0.6931472
-carpet	N	#x.carpet(x)	0.0
-plant	N	#x.plant(x)	0.0
-spaces	N	#x.spaces(x)	0.0
-until	NP/NP	#x.until(x)	0.0
-front	NP	front	0.0
-wall	N	#x.wall(x)	0.6931472
+painting	N	#x.painting(x)	0.6931472
+painting	NP	#x.painting(x)	-1.0
+until	NP/NP	#x303.#x302.until(is(x303,x302))	0.0
+until	NP/NP	#x492.#x491.x492 @ until(x491)	-1.0
+until	NP/NP	#x.until(x)	1.9459101
+until	NP/NP	l(x,x)	-1.0
+front	NP	front	1.0986123
+to	(NP\NP)/NP	#x232.at(x232)	-1.0
+to	(NP\NP)/NP	#x.#y.y @ x	1.3862944
+to	(NP\NP)/NP	l(x,x)	-1.0
+wall	N	#x.wall(x)	1.0986123
 wall	NP	#x.wall(x)	-1.0
-walk	S/NP	#x.move(x)	0.6931472
+open	N/N	#x.x @ open	0.0
+walk	S/NP	#x.move(x)	1.3862944
+walk	S/NP	#x3137.#x3136.x3137 @ move(until(x3136))	-1.0
+walk	S/NP	#x3139.#x3136.move(x3139 @ x3136)	0.0
+walk	S/NP	#x3116.walk(x3116)	-1.0
+walk	S/NP	l(x,x)	-1.0

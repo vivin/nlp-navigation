@@ -101,8 +101,9 @@ var locations = (function() {
                 return create(row, column);
             },
             compare: function (other, orientation) {
-                var orientation = orientation || absolute.north;
-                var distance = Math.abs((other.row - row) + (other.column - column));
+                orientation = orientation || absolute.north;
+                var distance = Math.abs(other.row - row) + Math.abs(other.column - column);
+
                 if(other.row > row) {
                     return {
                         absolute: absolute.south,
@@ -755,11 +756,11 @@ var parser = (function () {
 
 var world = (function () {
     var worldTemplate =
-        "W3P2W3W3w0W3W3w1W3W3w2W3W3P3W1" +
+        "W3P2W3W3w0W3W3w1P0W3w2W3W3P3W1" +
         "PP                          LL" +
-        "W3  W4W4W4W4W4W4W4W4W4W4W4  W1" +
+        "W3  W4W4W4W4W4W4  W4W4W4W4  W1" +
         "W3  W4XXXXXXXXPP  ~1~1~1~1  W1" +
-        "W3  W4XXXXXXXXW4  W2W2W2W2  W1" +
+        "P4  W4XXXXXXXXW4  W2W2W2W2  W1" +
         "W3  W4LLW4XXXXD5  ~0~0~0~0  W1" +
         "W3      W4XXXXW4  W0W0W0W0  W1" +
         "W3LLW3  W4XXXXW4  W0XXXXW0  W1" +
@@ -768,7 +769,7 @@ var world = (function () {
         "XXXXW3  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXD2  W4XXXXW4  W0XXXXW0  W1" +
         "XXXXW3  W4W4D1W4  W0W0W0W0  W1" +
-        "XXXXW3                      W1" +
+        "XXXXPP                      W1" +
         "XXXXW3W1W1W1W1W1D0W1W1W1W1PPW1";
 
     var ROWS = 15;
@@ -794,7 +795,7 @@ var world = (function () {
             path: false,
             space: false,
             reference: true,
-            attributes: ["old", "abstract", "classic", "modern"]
+            attributes: ["old", "abstract", "classic", "modern", "famous"]
         },
         w: {
             name: "window",
@@ -1022,7 +1023,7 @@ var robot = (function (world) {
             var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function(candidateTurnPoints, direction) {
                 if(scanData.lineOfSight[direction].turnPoints.length > 0 &&
                     (lastDirection == null ||
-                        (lastDirection !== locations.oppositeAbsolute[direction] && lastDirection !== direction))) {
+                        (lastDirection !== locations.oppositeAbsolute[direction]))) {
                     candidateTurnPoints[direction] = scanData.lineOfSight[direction].turnPoints;
                 }
 
@@ -1033,31 +1034,95 @@ var robot = (function (world) {
             return candidateTurnPoints[randomDirection][Math.floor(Math.random() * candidateTurnPoints[randomDirection].length)].location;
         }
 
-        function generateTurnReferences(scanData) {
-            var numTurnReferences = Math.floor(Math.random() * (scanData.immediate.objects.length - 1)) + 1;
-            return Array.range(0, numTurnReferences).map(function() {
-                var object = scanData.immediate.objects[Math.floor(Math.random() * scanData.immediate.objects.length)];
+        function findDestination(scanData, location, direction) {
+            var objects = scanData.lineOfSight[direction].objects.filter(function(object) {
+                return object.name !== "wall";
+            });
+
+            var object = objects[Math.floor(Math.random() * objects.length)];
+            var row = Math.abs(location.row - object.position.row) <= 1 ? location.row : object.position.row;
+            var column = Math.abs(location.column - object.position.column) <= 1 ? location.column : object.position.column;
+
+            //todo generate the location adjacent to the object.
+            console.log("compare object", object.position.row, object.position.column);
+            console.log("against location", location.row, location.column);
+
+            return locations.create(row, column);
+        }
+
+        function generateMoveReference(scanData) {
+            var object = null;
+            do {
+                var random = scanData.immediate.objects[Math.floor(Math.random() * scanData.immediate.objects.length)];
+                object = {
+                    name: random.name,
+                    attribute: random.attribute,
+                    direction: random.position.absolute
+                };
+            } while(object.name === "wall");
+
+            return object;
+        }
+
+        function generateTurnReference(scanData) {
+            var object = scanData.immediate.objects[Math.floor(Math.random() * scanData.immediate.objects.length)];
+            return {
+                name: object.name,
+                attribute: object.attribute,
+                direction: object.position.absolute
+            };
+        }
+
+        function generateVerifyReference(currentLocation, currentOrientation, scanData) {
+            //Ignore objects that are directly northwest, northeast, southwest or southwest as the relative and absolute
+            //directions can be ambiguous. Since compare gives the straight-line distance, this means we can ignore
+            //anything that is of distance 2. Our maximum distance is going to be 4.
+            var references = scanData.immediate.objects.filter(function(object) {
+                return object.name !== "wall";
+            }).map(function(object) {
                 return {
                     name: object.name,
                     attribute: object.attribute,
-                    direction: object.position.absolute
+                    direction: object.position.absolute,
+                    distance: 1
                 };
-            });
-        }
+            }).concat(Object.keys(scanData.lineOfSight).filter(function(direction) {
+                return locations.oppositeAbsolute[direction] !== currentOrientation;
+            }).reduce(function(references, direction) {
+                return scanData.lineOfSight[direction].objects.filter(function(object) {
+                    var distance = currentLocation.compare(locations.create(object.position.row, object.position.column)).distance;
+                    return (distance <= 5 && distance !== 2) && object.name !== "wall";
+                }).reduce(function(references, object) {
+                    var rows = Math.abs(currentLocation.row - object.position.row);
+                    var columns = Math.abs(currentLocation.column - object.position.column);
+                    var distance = (rows > columns) ? rows : columns;
 
-        function generateMoveOrVerifyReferences(scanData) {
+                    references.push({
+                        name: object.name,
+                        attribute: object.attribute,
+                        direction: direction,
+                        distance: distance
+                    });
+
+                    return references;
+                }, references);
+            }, []));
+
+            return references[Math.floor(Math.random() * references.length)];
         }
 
         var paths = [];
+        var currentOrientation = locations.absolute.north;
+        var lastOrientation = null;
         var lastDirection = null;
         var size = Math.floor(Math.random() * 4) + 3;
         var done = false;
         var i = 0;
-        while(i < size && !done) {
+        while(i < size - 1 && !done) {
             var coordinate = {};
 
-            var isFirst = (i == 0);
-            var isLast = (i == (size - 1));
+            var isFirst = (i === 0);
+            var isLast = (i === (size - 2));
             var randomLocation = isFirst ? world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)] : null;
             var previousLocation = isFirst ? null : paths[i - 1].location;
             var scanLocation = isFirst ? randomLocation : previousLocation;
@@ -1066,37 +1131,74 @@ var robot = (function (world) {
             var scanData = scan();
 
             coordinate.location = isFirst ? randomLocation : findNextLocation(scanData, lastDirection);
-
-            if(!isLast) {
-                coordinate.turnSource = {
-                    type: Math.floor(Math.random() * 2) === 1 ? "conditional": "unconditional",
-                    useRelativeDirection: Math.floor(Math.random() * 2) === 1
-                };
-
-                if(coordinate.turnSource.type === "conditional") {
-                    coordinate.turnSource.references = generateTurnReferences(scanData);
+            if(i >= 2) {
+                while(coordinate.location.compare(paths[i - 2].location).coincident) {
+                    coordinate.location = findNextLocation(scanData, lastDirection);
                 }
             }
 
-            if(!isLast && !isFirst) {
+            if(!isFirst) {
+                lastOrientation = currentOrientation;
+                currentOrientation = previousLocation.compare(coordinate.location).absolute;
+
+                turn(currentOrientation);
+                start(coordinate.location.row, coordinate.location.column);
+                scanData = scan();
+
                 coordinate.moveDestination = {
                     type:  Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
                     useRelativeDirection:  Math.floor(Math.random() * 2) === 1
                 };
 
                 if(coordinate.moveDestination.type === "conditional") {
-                    coordinate.moveDestination.references = generateMoveOrVerifyReferences(scanData);
+                    coordinate.moveDestination.reference = generateMoveReference(scanData)
                 }
             }
 
-            if(isLast) {
-                coordinate.verifyDestination = {
-                    useRelativeDirection: Math.floor(Math.random() * 2) === 1,
-                    references: generateMoveOrVerifyReferences(scanData)
-                };
+            var type = Math.floor(Math.random() * 2) === 1 ? "conditional": "unconditional";
+            coordinate.turnSource = {
+                type: type,
+                useRelativeDirection: type === "conditional" ? true : Math.floor(Math.random() * 2) === 1
+            };
+
+            if(coordinate.turnSource.type === "conditional") {
+                coordinate.turnSource.reference = generateTurnReference(scanData);
             }
 
             paths.push(coordinate);
+            lastDirection = currentOrientation;
+
+            if(isLast) {
+                var lastLocation = coordinate.location;
+                console.log(lastLocation);
+                var turnPoint = findNextLocation(scanData, lastDirection);
+                var direction = coordinate.location.compare(locations.create(turnPoint.row, turnPoint.column)).absolute;
+                turn(direction);
+
+                coordinate = {};
+                console.log(lastLocation);
+                coordinate.location = findDestination(scanData, lastLocation, direction);
+                start(coordinate.location.row, coordinate.location.column);
+
+                scanData = scan();
+
+                coordinate.moveDestination = {
+                    type:  Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
+                    useRelativeDirection:  Math.floor(Math.random() * 2) === 1
+                };
+
+                if(coordinate.moveDestination.type === "conditional") {
+                    coordinate.moveDestination.reference = generateMoveReference(scanData)
+                }
+
+                coordinate.verifyDestination = {
+                    useRelativeDirection: Math.floor(Math.random() * 2) === 1,
+                    reference: generateVerifyReference(coordinate.location, currentOrientation, scanData)
+                };
+
+                paths.push(coordinate);
+            }
+
             i++;
         }
 
