@@ -1040,14 +1040,24 @@ var robot = (function (world) {
             });
 
             var object = objects[Math.floor(Math.random() * objects.length)];
-            var row = Math.abs(location.row - object.position.row) <= 1 ? location.row : object.position.row;
-            var column = Math.abs(location.column - object.position.column) <= 1 ? location.column : object.position.column;
+            if(location.row === object.position.row) {
+                if(location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.east) {
+                    return locations.create(object.position.row, object.position.column - 1);
+                } else {
+                    return locations.create(object.position.row, object.position.column + 1);
+                }
+            } else if(location.column === object.position.column) {
+                if(location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.north) {
+                    return locations.create(object.position.row + 1, object.position.column);
+                } else {
+                    return locations.create(object.position.row - 1, object.position.column);
+                }
+            } else {
+                var row = Math.abs(location.row - object.position.row) == 1 ? location.row : object.position.row;
+                var column = Math.abs(location.column - object.position.column) <= 1 ? location.column : object.position.column;
 
-            //todo generate the location adjacent to the object.
-            console.log("compare object", object.position.row, object.position.column);
-            console.log("against location", location.row, location.column);
-
-            return locations.create(row, column);
+                return locations.create(row, column);
+            }
         }
 
         function generateMoveReference(scanData) {
@@ -1170,13 +1180,11 @@ var robot = (function (world) {
 
             if(isLast) {
                 var lastLocation = coordinate.location;
-                console.log(lastLocation);
                 var turnPoint = findNextLocation(scanData, lastDirection);
                 var direction = coordinate.location.compare(locations.create(turnPoint.row, turnPoint.column)).absolute;
                 turn(direction);
 
                 coordinate = {};
-                console.log(lastLocation);
                 coordinate.location = findDestination(scanData, lastLocation, direction);
                 start(coordinate.location.row, coordinate.location.column);
 
