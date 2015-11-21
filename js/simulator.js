@@ -1,4 +1,4 @@
-var locations = (function() {
+var locations = (function () {
     var absolute = {
         north: "north",
         south: "south",
@@ -104,14 +104,14 @@ var locations = (function() {
                 orientation = orientation || absolute.north;
                 var distance = Math.abs(other.row - row) + Math.abs(other.column - column);
 
-                if(other.row > row) {
+                if (other.row > row) {
                     return {
                         absolute: absolute.south,
-                        relative:  relativeFromAbsolute[orientation][absolute.south],
+                        relative: relativeFromAbsolute[orientation][absolute.south],
                         distance: distance,
                         coincident: false
                     };
-                } else if(other.row < row) {
+                } else if (other.row < row) {
                     return {
                         absolute: absolute.north,
                         relative: relativeFromAbsolute[orientation][absolute.north],
@@ -232,7 +232,7 @@ var parser = (function () {
             returnEmptyTokens: false
         }));
 
-        if(!result.successful) {
+        if (!result.successful) {
             throw result.message;
         }
 
@@ -409,7 +409,7 @@ var parser = (function () {
             conditions.push(result.data);
         }
 
-        if(!result.successful) {
+        if (!result.successful) {
             return result;
         }
 
@@ -915,16 +915,16 @@ var world = (function () {
     };
 })();
 
-String.prototype.interpolate = function() {
+String.prototype.interpolate = function () {
     var values = arguments;
-    return this.replace(/\{([0-9])\}/g, function($0, $1) {
+    return this.replace(/\{([0-9])\}/g, function ($0, $1) {
         return values[$1];
     });
 };
 
-Array.range = function(start, end) {
+Array.range = function (start, end) {
     var arr = [];
-    for(var i = start; i < end; i++) {
+    for (var i = start; i < end; i++) {
         arr.push(i);
     }
 
@@ -965,12 +965,12 @@ var robot = (function (world) {
             var currentLocation = location[absoluteDirection]();
             while (!world.isBlocked(currentLocation)) {
                 var scanData = immediateScan(currentLocation);
-                var turnPointPaths = scanData.paths.filter(function(path) {
+                var turnPointPaths = scanData.paths.filter(function (path) {
                     return absoluteDirection !== path && absoluteDirection !== locations.oppositeAbsolute[path];
                 });
 
                 sensorData.lineOfSight[absoluteDirection].objects = sensorData.lineOfSight[absoluteDirection].objects.concat(scanData.objects);
-                if(turnPointPaths.length > 0) {
+                if (turnPointPaths.length > 0) {
                     sensorData.lineOfSight[absoluteDirection].turnPoints = sensorData.lineOfSight[absoluteDirection].turnPoints.concat({
                         location: currentLocation.clone(),
                         paths: turnPointPaths
@@ -1017,123 +1017,102 @@ var robot = (function (world) {
 
         return sensorData;
     }
-    
-    function formal(array) {
-        paths=generatePath();
+
+    function formal() {
+        function checkattribute(references, type) {
+            var output;
+            switch (type) {
+                case "turn":
+                    if (references.attribute == null) {
+                        output = "turn(until(is(" + references.name + ", at(" + references.direction + "))))";
+                    }
+                    else if (typeof references.attribute === "string") {
+                        output = "turn(until(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + "))))";
+                    }
+                    else {
+                        output = "turn(until(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + "))))";
+                    }
+                    break;
+                case "move":
+                    if (references.attribute == null) {
+                        output = "move(until(is(" + references.name + ", at(" + references.direction + "))))";
+                    }
+                    else if (typeof references.attribute === "string") {
+                        output = "move(until(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + "))))";
+                    }
+                    else {
+                        output = "move(until(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + "))))";
+                    }
+                    break;
+                case "verify":
+                    if (references.attribute == null) {
+                        output = "verify(that(is(" + references.name + ", at(" + references.direction + ",spaces(" + references.distance + ")))))";
+                    }
+                    else if (typeof references.attribute === "string") {
+                        output = "verify(that(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + ",spaces(" + references.distance + ")))))";
+                    }
+                    else {
+                        output = "verify(that(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + ",spaces(" + references.distance + ")))))";
+                    }
+                    break;
+
+            }
+            return output;
+        }
+
+        var paths = generatePath();
+
         var result = [];
-        //var result1 = [];    
-        result.push("start("+paths[0].location.row+","+paths[0].location.column+")");
-        var orientation=locations.absolute.north;
-        //var orientation1=locations.absolute.north; 
-        
-        for (var i = 0; i < paths.length-1; i++) {
-            console.log(orientation);
-            var direction = paths[i].location.compare(paths[i+1].location,orientation);
-            //var direction1 = paths[i].location.compare(paths[i+1].location,orientation);    
-            //var xdist= array[i].row - array[i+1].row;
-            //var ydist= array[i].column - array[i+1].column;
-            if(paths[i].turnSource.type == "unconditional"){
-                if(paths[i].turnSource.useRelativeDirection)
-                {
-                    orientation=direction.absolute;
-                    result.push("turn("+direction.relative+")");      
-                    result.push("move(steps("+direction.distance+"))");
+        result.push("start(" + paths[0].location.row + "," + paths[0].location.column + ")");
+        var orientation = locations.absolute.north;
+
+        for (var i = 0; i < paths.length - 1; i++) {
+            var direction = paths[i].location.compare(paths[i + 1].location, orientation);
+            if (paths[i].turnSource.type == "unconditional") {
+                if (paths[i].turnSource.useRelativeDirection) {
+                    orientation = direction.absolute;
+                    result.push("turn(" + direction.relative + ")");
+                    result.push("move(steps(" + direction.distance + "))");
 
                 }
-                else
-                {
-                    orientation=direction.absolute;
-                    result.push("turn("+direction.absolute+")");      
-                    result.push("move(steps("+direction.distance+"))");                
+                else {
+                    orientation = direction.absolute;
+                    result.push("turn(" + direction.absolute + ")");
+                    result.push("move(steps(" + direction.distance + "))");
                 }
-                
-           }
-            else
-            {
-             var outstring;    
-             outstring = checkattribute(paths[i].turnSource.reference,"turn");
-             result.push(outstring);
-                if(paths[i+1].moveDestination.type=="unconditional"){
-                    result.push("move(steps("+direction.distance+"))");                
-                }
-                else
-                {
-                     outstring = checkattribute(paths[i+1].moveDestination.reference,"move");
-                     result.push(outstring);
 
-                //result.push("move(until(is("+paths[i+1].moveDestination.reference.name+"("+paths[i+1].moveDestination.reference.attribute+"), at("+paths[i+1].moveDestination.reference.direction+"))))");
+            }
+            else {
+                var outstring;
+                outstring = checkattribute(paths[i].turnSource.reference, "turn");
+                result.push(outstring);
+                if (paths[i + 1].moveDestination.type == "unconditional") {
+                    result.push("move(steps(" + direction.distance + "))");
                 }
-                if(paths[i+1].verifyDestination)
-                {
-                        outstring = checkattribute(paths[i+1].verifyDestination.reference,"verify");
-                        result.push(outstring);
+                else {
+                    outstring = checkattribute(paths[i + 1].moveDestination.reference, "move");
+                    result.push(outstring);
 
                 }
-                //var dist = paths[i+1].turnSource.reference.distance;    
-                //result.push("turn("+dir+")");      
-                //result.push("move(steps("+dist+"))");
-                orientation=direction.absolute;
+                if (paths[i + 1].verifyDestination) {
+                    outstring = checkattribute(paths[i + 1].verifyDestination.reference, "verify");
+                    result.push(outstring);
+
+                }
+
+                orientation = direction.absolute;
             }
         }
-        
-            console.log(result, paths.map(function(e) { return e.location.toString(); }));
-            //console.log(result1, paths.map(function(e) { return e.location.toString(); }));
-            //fresult=[result,result1];
-            return result;
 
-        }
-    function checkattribute(references,type){
-        var output;
-    switch(type){
-        case "turn": if(references.attribute == null)
-                        {
-                            output="turn(until(is("+references.name+", at("+references.direction+"))))";
-                        }
-                     else if(typeof references.attribute === "string")
-                            {
-                                output="turn(until(is("+references.name+"("+references.attribute+"), at("+references.direction+"))))";
-                            }
-                     else   {
-                                output= "turn(until(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+"))))";        
-                            }
-                    break;
-        case "move": if(references.attribute == null)
-                        {
-                            output="move(until(is("+references.name+", at("+references.direction+"))))";
-                        }
-                     else if(typeof references.attribute === "string")
-                            {
-                                output="move(until(is("+references.name+"("+references.attribute+"), at("+references.direction+"))))";
-                            }
-                     else   {
-                                output= "move(until(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+"))))";        
-                            }
-                    break;
-        case "verify":
-            if(references.attribute == null)
-                        {
-                            output="verify(that(is("+references.name+", at("+references.direction+",spaces("+references.distance+")))))";
-                        }
-                     else if(typeof references.attribute === "string")
-                            {
-                                output="verify(that(is("+references.name+"("+references.attribute+"), at("+references.direction+",spaces("+references.distance+")))))";
-                            }
-                     else   {
-                                output= "verify(that(is("+references.name+"("+references.attribute.name+"("+references.attribute.attribute+")), at("+references.direction+",spaces("+references.distance+")))))";        
-                            }
-                    break;
-            
+        return result;
     }
-        return output;
-}
 
-        
     function generatePath() {
         function findNextLocation(scanData, lastDirection) {
-            var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function(candidateTurnPoints, direction) {
-                if(scanData.lineOfSight[direction].turnPoints.length > 0 &&
+            var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function (candidateTurnPoints, direction) {
+                if (scanData.lineOfSight[direction].turnPoints.length > 0 &&
                     (lastDirection == null ||
-                        (lastDirection !== locations.oppositeAbsolute[direction]))) {
+                    (lastDirection !== locations.oppositeAbsolute[direction]))) {
                     candidateTurnPoints[direction] = scanData.lineOfSight[direction].turnPoints;
                 }
 
@@ -1145,19 +1124,19 @@ var robot = (function (world) {
         }
 
         function findDestination(scanData, location, direction) {
-            var objects = scanData.lineOfSight[direction].objects.filter(function(object) {
+            var objects = scanData.lineOfSight[direction].objects.filter(function (object) {
                 return object.name !== "wall";
             });
 
             var object = objects[Math.floor(Math.random() * objects.length)];
-            if(location.row === object.position.row) {
-                if(location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.east) {
+            if (location.row === object.position.row) {
+                if (location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.east) {
                     return locations.create(object.position.row, object.position.column - 1);
                 } else {
                     return locations.create(object.position.row, object.position.column + 1);
                 }
-            } else if(location.column === object.position.column) {
-                if(location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.north) {
+            } else if (location.column === object.position.column) {
+                if (location.compare(locations.create(object.position.row, object.position.column)).absolute === locations.absolute.north) {
                     return locations.create(object.position.row + 1, object.position.column);
                 } else {
                     return locations.create(object.position.row - 1, object.position.column);
@@ -1179,7 +1158,7 @@ var robot = (function (world) {
                     attribute: random.attribute,
                     direction: random.position.absolute
                 };
-            } while(object.name === "wall");
+            } while (object.name === "wall");
 
             return object;
         }
@@ -1197,22 +1176,22 @@ var robot = (function (world) {
             //Ignore objects that are directly northwest, northeast, southwest or southwest as the relative and absolute
             //directions can be ambiguous. Since compare gives the straight-line distance, this means we can ignore
             //anything that is of distance 2. Our maximum distance is going to be 4.
-            var references = scanData.immediate.objects.filter(function(object) {
+            var references = scanData.immediate.objects.filter(function (object) {
                 return object.name !== "wall";
-            }).map(function(object) {
+            }).map(function (object) {
                 return {
                     name: object.name,
                     attribute: object.attribute,
                     direction: object.position.absolute,
                     distance: 1
                 };
-            }).concat(Object.keys(scanData.lineOfSight).filter(function(direction) {
+            }).concat(Object.keys(scanData.lineOfSight).filter(function (direction) {
                 return locations.oppositeAbsolute[direction] !== currentOrientation;
-            }).reduce(function(references, direction) {
-                return scanData.lineOfSight[direction].objects.filter(function(object) {
+            }).reduce(function (references, direction) {
+                return scanData.lineOfSight[direction].objects.filter(function (object) {
                     var distance = currentLocation.compare(locations.create(object.position.row, object.position.column)).distance;
                     return (distance <= 5 && distance !== 2) && object.name !== "wall";
-                }).reduce(function(references, object) {
+                }).reduce(function (references, object) {
                     var rows = Math.abs(currentLocation.row - object.position.row);
                     var columns = Math.abs(currentLocation.column - object.position.column);
                     var distance = (rows > columns) ? rows : columns;
@@ -1238,7 +1217,7 @@ var robot = (function (world) {
         var size = Math.floor(Math.random() * 4) + 3;
         var done = false;
         var i = 0;
-        while(i < size - 1 && !done) {
+        while (i < size - 1 && !done) {
             var coordinate = {};
 
             var isFirst = (i === 0);
@@ -1251,13 +1230,13 @@ var robot = (function (world) {
             var scanData = scan();
 
             coordinate.location = isFirst ? randomLocation : findNextLocation(scanData, lastDirection);
-            if(i >= 2) {
-                while(coordinate.location.compare(paths[i - 2].location).coincident) {
+            if (i >= 2) {
+                while (coordinate.location.compare(paths[i - 2].location).coincident) {
                     coordinate.location = findNextLocation(scanData, lastDirection);
                 }
             }
 
-            if(!isFirst) {
+            if (!isFirst) {
                 lastOrientation = currentOrientation;
                 currentOrientation = previousLocation.compare(coordinate.location).absolute;
 
@@ -1266,29 +1245,29 @@ var robot = (function (world) {
                 scanData = scan();
 
                 coordinate.moveDestination = {
-                    type:  Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
-                    useRelativeDirection:  Math.floor(Math.random() * 2) === 1
+                    type: Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
+                    useRelativeDirection: Math.floor(Math.random() * 2) === 1
                 };
 
-                if(coordinate.moveDestination.type === "conditional") {
+                if (coordinate.moveDestination.type === "conditional") {
                     coordinate.moveDestination.reference = generateMoveReference(scanData)
                 }
             }
 
-            var type = Math.floor(Math.random() * 2) === 1 ? "conditional": "unconditional";
+            var type = Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional";
             coordinate.turnSource = {
                 type: type,
                 useRelativeDirection: type === "conditional" ? true : Math.floor(Math.random() * 2) === 1
             };
 
-            if(coordinate.turnSource.type === "conditional") {
+            if (coordinate.turnSource.type === "conditional") {
                 coordinate.turnSource.reference = generateTurnReference(scanData);
             }
 
             paths.push(coordinate);
             lastDirection = currentOrientation;
 
-            if(isLast) {
+            if (isLast) {
                 var lastLocation = coordinate.location;
                 var turnPoint = findNextLocation(scanData, lastDirection);
                 var direction = coordinate.location.compare(locations.create(turnPoint.row, turnPoint.column)).absolute;
@@ -1301,11 +1280,11 @@ var robot = (function (world) {
                 scanData = scan();
 
                 coordinate.moveDestination = {
-                    type:  Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
-                    useRelativeDirection:  Math.floor(Math.random() * 2) === 1
+                    type: Math.floor(Math.random() * 2) === 1 ? "conditional" : "unconditional",
+                    useRelativeDirection: Math.floor(Math.random() * 2) === 1
                 };
 
-                if(coordinate.moveDestination.type === "conditional") {
+                if (coordinate.moveDestination.type === "conditional") {
                     coordinate.moveDestination.reference = generateMoveReference(scanData)
                 }
 
@@ -1346,17 +1325,17 @@ var robot = (function (world) {
         }
 
         var rotation = parseInt(dalek.style.transform.replace(/[a-z()]/g, ""), 10);
-        if(direction === locations.relative.left || locations.relativeFromAbsolute[originalOrientation][orientation] === locations.relative.left) {
+        if (direction === locations.relative.left || locations.relativeFromAbsolute[originalOrientation][orientation] === locations.relative.left) {
             rotation -= 90;
         } else if (direction === locations.relative.right || locations.relativeFromAbsolute[originalOrientation][orientation] === locations.relative.right) {
             rotation += 90;
-        } else if(direction === locations.absolute.north) {
+        } else if (direction === locations.absolute.north) {
             rotation = 0;
-        } else if(direction === locations.absolute.south) {
+        } else if (direction === locations.absolute.south) {
             rotation = 180;
-        } else if(direction === locations.absolute.east) {
+        } else if (direction === locations.absolute.east) {
             rotation = 270;
-        } else if(direction === locations.absolute.west) {
+        } else if (direction === locations.absolute.west) {
             rotation = 90;
         }
 
@@ -1365,7 +1344,7 @@ var robot = (function (world) {
 
     function move(distance) {
         distance = distance || 1;
-        for(var i = 0; i < distance; i++) {
+        for (var i = 0; i < distance; i++) {
             if (!world.isBlocked(location[orientation]())) {
                 location = location[orientation]();
 
@@ -1387,7 +1366,7 @@ var robot = (function (world) {
         },
         scan: scan,
         render: function () {
-            if(dalek == null) {
+            if (dalek == null) {
                 dalek = document.createElement("div");
 
                 dalek.id = "dalek";
@@ -1411,7 +1390,7 @@ var robot = (function (world) {
         },
         parse: parser.parse,
         generatePath: generatePath,
-        formal:formal
+        formal: formal
     };
 
 })(world);

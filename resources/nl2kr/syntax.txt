@@ -4,7 +4,6 @@ main	N/N
 steel	N/N
 are	NP
 away	NP
-east	NP
 front	NP
 left	NP
 right	NP
