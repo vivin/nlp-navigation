@@ -61,3 +61,14 @@ with	NP/NP	#x.x
 you	NP	#x.verify(x)
 you	NP/NP	#x.x
 your	NP/N	#x.x
+to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
+you	NP	#x246.x246
+old	N/N	#x.old(x)
+of	(NP\NP)/NP	#x.#y.is(x,y)
+left	N	left
+be	S\NP	#x239.x239
+an	NP/N	#x.x
+should	(S\NP)/(S\NP)	#x238.x238 @ #x237.#x236.x236 @ verify(that(x237))
+the	NP/N	#x.at(x)
+painting	N	painting
+
