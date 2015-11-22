@@ -1,73 +1,99 @@
-away	NP/(NP\NP)	#x.until(x @ at(south))	0.0
-away	NP	away	-1.0
-away	NP	#x.away(x)	-1.0
-away	NP	l(x,x)	-1.0
-south	NP	south	-1.0
-south	NP	#x.south(x)	-1.0
-south	NP	l(x,x)	-1.0
-north	NP	north	-1.0
-north	NP	#x.north(x)	-1.0
-north	NP	l(x,x)	-1.0
+door	N	#x.door(x)	2.3978953
+door	NP	#x.door(x)	-1.0
 hall	N	#x.hall(x)	0.0
-turn	S/NP	#x88.turn(x88)	-1.0
+main	N/N	#x.x @ main	0.6931472
+your	NP/N	#x.x	0.6931472
+red	N/N	#x.x @ red	1.3862944
+should	(S\NP)/(S\NP)	#x.#y.y @ that(x)	0.0
+west	N	west	1.3862944
+from	(NP\NP)/NP	#x.#y.until(is(x,y))	1.3862944
+you	NP	#x.verify(x)	0.0
+you	NP/NP	#x.x	2.7080503
+you	NP/NP	#x.#y.x @ you(y)	-1.0
+you	NP/NP	#x.you(x)	-1.0
+you	NP/NP	#x.#y.you(is(x,y))	-1.0
+you	NP/NP	l(x,x)	-1.0
+glass	N/N	#x.x @ glass	0.0
+in	NP/NP	#x.x	0.0
+in	(NP\NP)/NP	#x681.#x679.x679 @ x681	1.0986123
+in	(NP\NP)/NP	#x682.#x680.x680 @ at(x682)	1.0986123
+old	N/N	#x.x @ old	0.6931472
+is	N	#x.#y.is(x,y)	0.6931472
+is	N	#x.#y.is(y,x)	0.0
+is	N	#x.x	0.6931472
+steps	N	#x674.steps(x674)	0.0
+doors	N	#x.doors(x)	0.6931472
+2	NP/N	#x.x @ 2	0.0
+at	(NP\NP)/NP	#x705.#x703.x703 @ x705	0.0
+at	(NP\NP)/NP	#x706.#x703.x703 @ at(x706)	0.0
+at	(NP\NP)/NP	l(x,x)	-1.0
+3	NP/N	#x675.x675 @ 3	0.0
+left	N	left	1.9459101
+left	NP	left	0.6931472
+left	NP	#x.left(x)	-1.0
+left	NP	l(x,x)	-1.0
+5	NP/N	#x676.x676 @ 5	0.0
+carpet	N	#x.carpet(x)	0.0
+plant	N	#x.plant(x)	0.6931472
+spaces	N	#x.spaces(x)	-1.0
+steel	N/N	#x.x @ steel	1.0986123
+away	NP	at(south)	1.3862944
+be	(S\NP)/NP	#x.x	0.0
+south	N	south	0.6931472
+north	N	north	0.6931472
+yellow	N/N	#x694.x694 @ yellow	1.0986123
+yellow	N/N	l(x,x)	-1.0
+turn	S/NP	#x670.turn(x670)	2.0794415
 turn	S/NP	l(x,x)	-1.0
-two	NP/N	#x.x @ two	0.0
-three	NP/N	#x90.x90 @ three	-1.0
-red	N/N	#x.x @ red	0.0
-red	N/N	l(x,x)	-1.0
-east	N	east	-1.0
-are	NP	#x.is(x)	0.0
+east	N	east	1.609438
+modern	N/N	#x700.x700 @ modern	1.0986123
+are	NP	#x.x	2.7080503
 are	NP	are	-1.0
 are	NP	#x.are(x)	-1.0
 are	NP	l(x,x)	-1.0
-of	((NP\NP)\NP)/NP	#x.#y.#z.z @ x , y	0.0
-of	((NP\NP)\NP)/NP	l(x,x)	-1.0
-west	N	west	-1.0
-from	(NP\NP)/NP	#x.#y.is(x,y)	0.0
-from	(NP\NP)/NP	l(x,x)	-1.0
-five	NP/N	#x91.x91 @ five	-1.0
-you	NP/NP	#x.x	0.0
-you	NP/NP	#x.you(x)	-1.0
-you	NP/NP	l(x,x)	-1.0
-move	S/NP	#x.move(x)	0.0
-in	NP/NP	#x.at(x)	0.0
-in	NP/NP	#x.x	-1.0
-in	NP/NP	#x.in(x)	-1.0
-in	NP/NP	l(x,x)	-1.0
+of	(NP\NP)/NP	#x.#y.is(x,at(y))	1.9459101
+of	(NP\NP)/NP	#x.#y.is(x,y)	2.1972246
+of	(NP\NP)/NP	#x706.#x703.x703 @ of(x706)	-1.0
+of	(NP\NP)/NP	l(x,x)	-1.0
+on	(NP\NP)/NP	#x.at(x)	-1.0
+on	(S\NP)/NP	#x708.#x707.turn(until(is(x707,at(x708))))	0.0
+a	NP/N	#x.x	0.0
+move	S/NP	#x.move(x)	1.7917595
+go	S/NP	#x.move(x)	1.7917595
 lamp	N	lamp	0.0
-right	NP	right	-1.0
+right	N	right	1.0986123
+right	NP	right	0.6931472
 right	NP	#x.right(x)	-1.0
 right	NP	l(x,x)	-1.0
-steps	N	#x89.steps(x89)	-1.0
-potted	N/N	#x.x @ potted	0.0
-grey	N/N	#x.x @ grey	0.0
-grey	N/N	l(x,x)	-1.0
-doors	N	#x.doors(x)	0.0
-the	NP/N	#x.x	0.0
-the	NP/N	#x91.x91 @ the	-1.0
+grey	N/N	#x.x @ grey	0.6931472
+potted	N/N	#x.x @ potted	0.6931472
+the	NP/N	#x.at(x)	1.609438
+the	NP/N	#x.x	3.295837
+the	NP/N	#x.x @ the	-1.0
 the	NP/N	l(x,x)	-1.0
+the	(NP/NP)/N	#x.#y.y @ x	1.609438
 the	(NP/NP)/N	#x.x	0.0
 the	(NP/NP)/N	l(x,x)	-1.0
-with	NP/NP	#x.x	0.0
-with	NP/NP	#x.with(x)	-1.0
-with	NP/NP	l(x,x)	-1.0
-with	NP/NP	#x.at(x)	-1.0
-face	S/NP	#x.turn(x)	0.0
-face	S/NP	#x88.face(x88)	-1.0
-face	S/NP	l(x,x)	-1.0
+with	NP/NP	#x.x	0.6931472
+face	S/NP	#x.turn(x)	2.0794415
 blue	N/N	#x.x @ blue	0.0
-left	NP	left	0.0
-plant	N	#x.plant(x)	0.0
-carpet	N	#x.carpet(x)	0.0
-spaces	N	#x.spaces(x)	0.0
-until	NP/NP	#x.until(x)	0.0
+painting	N	#x.painting(x)	1.609438
+painting	NP	#x.painting(x)	-1.0
+until	NP/NP	#x.#y.until(is(x,y))	0.6931472
+until	NP/NP	#x.#y.x @ until(y)	-1.0
+until	NP/NP	#x.until(x)	2.8903718
 until	NP/NP	l(x,x)	-1.0
-front	NP	front	0.0
-front	NP	north	0.0
-front	NP	#x.front(x)	-1.0
-front	NP	l(x,x)	-1.0
-wall	NP	#x.wall(x)	0.0
-wall	N	#x.wall(x)	0.0
-walk	S/NP	#x.move(x)	0.0
-walk	S/NP	#x88.walk(x88)	-1.0
+front	NP	front	1.9459101
+to	(NP\NP)/NP	#x.#y.y @ at(x)	1.609438
+to	(NP\NP)/NP	#x.#y.y @ x	1.9459101
+to	(NP\NP)/NP	#x.at(x)	-1.0
+to	(NP\NP)/NP	#x706.#x703.x703 @ to(x706)	-1.0
+to	(NP\NP)/NP	l(x,x)	-1.0
+wall	N	#x.wall(x)	1.7917595
+wall	NP	#x.wall(x)	-1.0
+open	N/N	#x.x @ open	0.6931472
+open	N/N	l(x,x)	-1.0
+walk	S/NP	#x.#y.move(x @ y)	1.0986123
+walk	S/NP	#x.move(x)	2.0794415
+walk	S/NP	#x.walk(x)	-1.0
 walk	S/NP	l(x,x)	-1.0
