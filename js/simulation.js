@@ -5,7 +5,7 @@ var simulation = (function(){
         until.forEach(function (condition) {
             var direction = condition.orientation.direction
             if(typeof(condition.orientation.distance) != 'undefined') {
-                var distance = condition.orientation.distance.magnitude
+                var distance = parseInt(condition.orientation.distance.magnitude) + 1
             }
             if (direction!=null && typeof(distance) == 'undefined' ){
                 for (i=0;i<scan.immediate.objects.length;i++){
@@ -35,7 +35,7 @@ var simulation = (function(){
                 for(i=0;i<scan.lineOfSight[robot.orientation()].objects.length;i++) {
                     object = scan.lineOfSight[robot.orientation()].objects[i]
                         currentPosition = locations.create(object.position.row,object.position.column)
-                        if (distance == currentPosition.compare(robot.location).distance) {
+                        if (distance == currentPosition.compare(robot.location()).distance) {
                             if (object.position.relative === direction &&
                                 object.name === condition.object.name) {
                                 if (typeof (object.attribute) === 'string') {

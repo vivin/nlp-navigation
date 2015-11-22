@@ -1364,7 +1364,9 @@ var robot = (function (world) {
         orientation: function () {
             return _orientation;
         },
-        location: location,
+        location: function(){
+            return _location;
+        },
         scan: scan,
         render: function () {
             if (dalek == null) {
