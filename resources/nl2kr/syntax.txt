@@ -28,3 +28,5 @@ go	S/NP
 move	S/NP
 turn	S/NP
 walk	S/NP
+should	(S\NP)/(S\NP)
+be	(S\NP)/NP

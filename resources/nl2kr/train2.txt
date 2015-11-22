@@ -1,0 +1,1 @@
+with the red door on your left	turn(until(is(door(red), at(left))))

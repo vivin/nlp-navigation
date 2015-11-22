@@ -1,8 +1,10 @@
 2	NP/N	#x.x @ 2
 a	NP/N	#x.x
+an	NP/N	#x.x
 are	NP	#x.x
 away	NP	at(south)
 be	(S\NP)/NP	#x.x
+be	S\NP	#x.x
 blue	N/N	#x.x @ blue
 carpet	N	#x.carpet(x)
 door	N	#x.door(x)
@@ -13,10 +15,12 @@ face	S/NP	#x.turn(x)
 from	(NP\NP)/NP	#x.#y.until(is(x,y))
 front	NP	front
 front	NP	front
+front	NP	front
 glass	N/N	#x.x @ glass
 go	S/NP	#x.move(x)
 grey	N/N	#x.x @ grey
 hall	N	#x.hall(x)
+in	(NP\NP)/NP	#x.#y.is(y,at(x))
 in	NP/NP	#x.x
 is	N	#x.#y.is(x,y)
 is	N	#x.#y.is(y,x)
@@ -24,21 +28,27 @@ is	N	#x.x
 lamp	N	lamp
 left	N	left
 left	N	left
+left	NP	left
 main	N/N	#x.x @ main
 move	S/NP	#x.move(x)
 north	N	north
 of	(NP\NP)/NP	#x.#y.is(x,at(y))
 of	(NP\NP)/NP	#x.#y.is(x,y)
+of	(NP\NP)/NP	#x.x
 old	N/N	#x.x @ old
 on	(NP\NP)/NP	#x.at(x)
 open	N/N	#x.x @ open
 painting	N	#x.painting(x)
 painting	NP	#x.painting(x)
 plant	N	#x.plant(x)
+plant	N	#x.plant(x)
+potted	N/N	#x.x @ potted
 potted	N/N	#x.x @ potted
 red	N/N	#x.x @ red
 right	N	right
 should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
+should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
+should	(S\NP)/(S\NP)	#x.x @ #y.#z.z @ verify(that(y))
 south	N	south
 spaces	N	#x.spaces(x)
 steel	N/N	#x.x @ steel
@@ -46,6 +56,8 @@ the	(NP/NP)/N	#x.#y.y @ x
 the	(NP/NP)/N	#x.x
 the	NP/N	#x.at(x)
 the	NP/N	#x.x
+there	NP	#x.verify(x)
+to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
 to	(NP\NP)/NP	#x.#y.y @ at(x)
 to	(NP\NP)/NP	#x.#y.y @ x
 to	(NP\NP)/NP	#x.at(x)
@@ -59,16 +71,7 @@ wall	NP	#x.wall(x)
 west	N	west
 with	NP/NP	#x.x
 you	NP	#x.verify(x)
+you	NP	#x.x
 you	NP/NP	#x.x
 your	NP/N	#x.x
-to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
-you	NP	#x246.x246
-old	N/N	#x.old(x)
-of	(NP\NP)/NP	#x.#y.is(x,y)
-left	N	left
-be	S\NP	#x239.x239
-an	NP/N	#x.x
-should	(S\NP)/(S\NP)	#x238.x238 @ #x237.#x236.x236 @ verify(that(x237))
-the	NP/N	#x.at(x)
-painting	N	painting
 
