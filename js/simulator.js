@@ -934,13 +934,13 @@ Array.range = function (start, end) {
 var robot = (function (world) {
     var dalek = null;
 
-    var location = world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)];
-    var orientation = locations.absolute.north;
+    var _location = world.startingPoints[Math.floor(Math.random() * world.startingPoints.length)];
+    var _orientation = locations.absolute.north;
 
     function scan() {
         var sensorData = {
-            orientation: orientation,
-            immediate: immediateScan(location),
+            orientation: _orientation,
+            immediate: immediateScan(_location),
             lineOfSight: {
                 north: {
                     objects: [],
@@ -962,7 +962,7 @@ var robot = (function (world) {
         };
 
         ["north", "south", "east", "west"].forEach(function (absoluteDirection) {
-            var currentLocation = location[absoluteDirection]();
+            var currentLocation = _location[absoluteDirection]();
             while (!world.isBlocked(currentLocation)) {
                 var scanData = immediateScan(currentLocation);
                 var turnPointPaths = scanData.paths.filter(function (path) {
@@ -996,7 +996,7 @@ var robot = (function (world) {
                             row: currentLocation.row,
                             column: currentLocation.column,
                             absolute: locations.absolute[absoluteDirection],
-                            relative: locations.relativeFromAbsolute[orientation][absoluteDirection]
+                            relative: locations.relativeFromAbsolute[_orientation][absoluteDirection]
                         }
                     });
                 }
@@ -1308,26 +1308,26 @@ var robot = (function (world) {
         } else if (world.isBlocked(locations.create(row, column))) {
             console.warn("That location is not empty");
         } else {
-            location = locations.create(row, column);
+            _location = locations.create(row, column);
 
-            var rect = world.objectAt(location).cell.getBoundingClientRect();
+            var rect = world.objectAt(_location).cell.getBoundingClientRect();
             dalek.style.top = rect.top + "px";
             dalek.style.left = rect.left + "px";
         }
     }
 
     function turn(direction) {
-        var originalOrientation = orientation;
+        var originalOrientation = _orientation;
         if (locations.absolute[direction]) {
-            orientation = direction;
+            _orientation = direction;
         } else {
-            orientation = locations.absoluteFromRelative[orientation][direction];
+            _orientation = locations.absoluteFromRelative[_orientation][direction];
         }
 
         var rotation = parseInt(dalek.style.transform.replace(/[a-z()]/g, ""), 10);
-        if (direction === locations.relative.left || locations.relativeFromAbsolute[originalOrientation][orientation] === locations.relative.left) {
+        if (direction === locations.relative.left || locations.relativeFromAbsolute[originalOrientation][_orientation] === locations.relative.left) {
             rotation -= 90;
-        } else if (direction === locations.relative.right || locations.relativeFromAbsolute[originalOrientation][orientation] === locations.relative.right) {
+        } else if (direction === locations.relative.right || locations.relativeFromAbsolute[originalOrientation][_orientation] === locations.relative.right) {
             rotation += 90;
         } else if (direction === locations.absolute.north) {
             rotation = 0;
@@ -1345,10 +1345,10 @@ var robot = (function (world) {
     function move(distance) {
         distance = distance || 1;
         for (var i = 0; i < distance; i++) {
-            if (!world.isBlocked(location[orientation]())) {
-                location = location[orientation]();
+            if (!world.isBlocked(_location[_orientation]())) {
+                _location = _location[_orientation]();
 
-                var rect = world.objectAt(location).cell.getBoundingClientRect();
+                var rect = world.objectAt(_location).cell.getBoundingClientRect();
                 dalek.style.top = rect.top + "px";
                 dalek.style.left = rect.left + "px";
             } else {
@@ -1362,7 +1362,7 @@ var robot = (function (world) {
         turn: turn,
         move: move,
         orientation: function () {
-            return orientation;
+            return _orientation;
         },
         scan: scan,
         render: function () {
@@ -1379,7 +1379,7 @@ var robot = (function (world) {
                 dalek.style.transform = "rotate(0deg)";
                 dalek.style.transition = "top 1s, left 1s, transform 2s";
 
-                var rect = world.objectAt(location).cell.getBoundingClientRect();
+                var rect = world.objectAt(_location).cell.getBoundingClientRect();
                 dalek.style.top = rect.top + "px";
                 dalek.style.left = rect.left + "px";
                 dalek.style.height = rect.height + "px";
