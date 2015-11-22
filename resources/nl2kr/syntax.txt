@@ -7,6 +7,10 @@ away	NP
 front	NP
 left	NP
 right	NP
+north	NP
+south	NP
+east	NP
+west	NP
 10	NP/N
 1	NP/N
 2	NP/N
@@ -30,3 +34,5 @@ turn	S/NP
 walk	S/NP
 should	(S\NP)/(S\NP)
 be	(S\NP)/NP
+at	NP/NP
+is	NP/NP
