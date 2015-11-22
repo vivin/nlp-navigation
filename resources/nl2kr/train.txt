@@ -28,4 +28,4 @@ walk until the main door is to the west	move(until(is(door(main), at(west))))
 walk until the glass door is to your right	move(until(is(door(glass), at(right))))
 with the red door on your left	turn(until(is(door(red), at(left))))
 you should be in front of a potted plant	verify(that(is(plant(potted), at(front))))
-you should
+you should be to the left of an old painting	verify(that(is(old(painting), at(left))))
