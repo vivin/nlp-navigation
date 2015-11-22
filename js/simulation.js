@@ -4,12 +4,14 @@ var simulation = (function(){
         scan = robot.scan()
         until.forEach(function (condition) {
             var direction = condition.orientation.direction
-            var distance = condition.orientation.distance
-            if (direction!=null){
+            if(typeof(condition.orientation.distance) != 'undefined') {
+                var distance = condition.orientation.distance.magnitude
+            }
+            if (direction!=null && typeof(distance) == 'undefined' ){
                 for (i=0;i<scan.immediate.objects.length;i++){
                     object = scan.immediate.objects[i]
 
-                    if (( object.position.absolute === direction || object.position.relative === direction)
+                    if (object.position.relative === direction
                         && object.name === condition.object.name ) {
                         if (typeof (object.attribute) === 'string') {
                             if ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
@@ -29,32 +31,31 @@ var simulation = (function(){
                     }
                 }
             }
-            if (distance!=null){
-                for(i=0;i<scan.lineOfSight[direction].lenqth;i++) {
-                    object = scan.lineOfSight[direction][i]
-                    forEach(function(object){
-                        if (( object.position.absolute === direction || object.position.relative === direction) &&
-                                object.name === condition.object.name){
-                            if (typeof (object.attribute) === 'string') {
-                                if ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
-                                    flag = true
-                                    break
-                                }
-                            }
-                            else{
-                                if ( typeof(condition.object.attributes[0]) != 'undefined') {
-                                    if(condition.object.attributes[0].name === object.attribute.name
-                                        && condition.object.attributes[0].attributes[0] == object.attribute.attribute ) {
+            else if (direction!=null && distance!=null){
+                for(i=0;i<scan.lineOfSight[robot.orientation()].objects.length;i++) {
+                    object = scan.lineOfSight[robot.orientation()].objects[i]
+                        currentPosition = locations.create(object.position.row,object.position.column)
+                        if (distance == currentPosition.compare(robot.location).distance) {
+                            if (object.position.relative === direction &&
+                                object.name === condition.object.name) {
+                                if (typeof (object.attribute) === 'string') {
+                                    if (typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
                                         flag = true
                                         break
                                     }
                                 }
+                                else {
+                                    if (typeof(condition.object.attributes[0]) != 'undefined') {
+                                        if (condition.object.attributes[0].name === object.attribute.name
+                                            && condition.object.attributes[0].attributes[0] == object.attribute.attribute) {
+                                            flag = true
+                                            break
+                                        }
+                                    }
+                                }
                             }
                         }
-                    })
                 }
-
-
             }
         });
         return flag
