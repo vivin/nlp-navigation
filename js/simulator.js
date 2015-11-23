@@ -1334,9 +1334,9 @@ var robot = (function (world) {
         } else if (direction === locations.absolute.south) {
             rotation = 180;
         } else if (direction === locations.absolute.east) {
-            rotation = 270;
-        } else if (direction === locations.absolute.west) {
             rotation = 90;
+        } else if (direction === locations.absolute.west) {
+            rotation = 270;
         }
 
         dalek.style.transform = "rotate" + "(" + rotation + "deg)";
@@ -1514,7 +1514,7 @@ var simulation = (function () {
 window.onload = function () {
     world.render();
     robot.render();
-    simulation.simulate(sentence)
+    //simulation.simulate(sentence)
 };
 
 window.onresize = function () {
