@@ -1403,29 +1403,36 @@ var simulation = (function () {
         var flag = false
         scan = robot.scan()
         until.forEach(function (condition) {
-            var direction = condition.orientation.direction
-            if (typeof(condition.orientation.distance) != 'undefined') {
-                var distance = parseInt(condition.orientation.distance.magnitude) + 1
+            direction = null
+            distance = null
+            if (typeof(condition.orientation) != 'undefined') {
+                direction = condition.orientation.direction
+                if (typeof(condition.orientation.distance) != 'undefined') {
+                    distance = parseInt(condition.orientation.distance.magnitude) + 1
+                }
             }
-            if (direction != null && typeof(distance) == 'undefined') {
+            if (distance == null) {
                 for (i = 0; i < scan.immediate.objects.length; i++) {
                     object = scan.immediate.objects[i]
-
-                    if (object.position.relative === direction
-                        && object.name === condition.object.name) {
+                    if (object.name === condition.object.name) {
                         if (typeof (object.attribute) === 'string') {
-                            if (typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
+                            if ((typeof( condition.object.attributes) == 'undefined') ||
+                                ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
+                                if (direction != null)
+                                    if (direction !== object.position.relative )
+                                        continue
                                 flag = true
                                 break
                             }
                         }
                         else {
-                            if (typeof(condition.object.attributes[0]) != 'undefined') {
-                                if (condition.object.attributes[0].name === object.attribute.name
-                                    && condition.object.attributes[0].attributes[0] == object.attribute.attribute) {
+                            if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
+                                condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
+                                    if (direction != null)
+                                        if (direction !== object.position.relative )
+                                            continue
                                     flag = true
                                     break
-                                }
                             }
                         }
                     }
@@ -1488,10 +1495,8 @@ var simulation = (function () {
                         }
                         else
                             do {
+                                robot.move()
                                 if (scanAndCheck(element.arguments.until)) break;
-                                else {
-                                    robot.move()
-                                }
                             } while (true)
                     }
                 }
