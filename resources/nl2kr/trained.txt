@@ -1,186 +1,234 @@
-door	N	#x.door(x)	3.2580965
-door	N	#x36.#x25.turn(until(is(door(x36),x25)))	0.6931472
-door	N	#x40.#x27.turn(until(is(door(x40),at(x27))))	0.0
-door	NP	#x.door(x)	-1.0
+door	N/N	#x.x @ door	-1.0
+door	N/N	#x414.#x402.turn(until(is(x414 @ door,at(x402))))	-1.0
+door	N/N	#x453.#x445.is(x453 @ door,at(x445))	-1.0
+door	N/N	#x410.#x400.turn(until(is(x410 @ door,x400)))	-1.0
+door	N/N	#x391.#x388.is(x391 @ door,x388)	-1.0
+door	N/N	l(x,x)	-1.0
+door	N	#x.door(x)	0.0
+door	N	#x411.#x400.turn(until(is(door(x411),x400)))	-1.0
+door	N	#x415.#x402.turn(until(is(door(x415),at(x402))))	-1.0
+door	NP	#x.door(x)	0.0
 hall	N	#x.hall(x)	0.0
-main	N/N	#x.x @ main	0.6931472
-your	NP/N	#x.x	1.9459101
-red	N/N	#x.x @ red	1.0986123
-should	(S\NP)/(S\NP)	#x.#y.y @ that(x)	3.713572
+main	N/N	#x.x @ main	0.0
+your	NP/N	#x.x	0.0
+your	NP/N	#x.x @ your	-1.0
+your	NP/N	#x450.#x445.is(x450,yourt(x445))	-1.0
+your	NP/N	l(x,x)	-1.0
+red	N/N	#x.x @ red	0.0
+should	(S\NP)/(S\NP)	#x.#y.y @ that(x)	0.0
 should	(S\NP)/(S\NP)	l(x,x)	-1.0
-west	N	west	0.6931472
-west	NP	west	0.6931472
-from	(NP\NP)/NP	#x.#y.until(is(x,y))	1.3862944
-locked	N/N	#x68.#x67.is(x68 @ locked,at(x67))	0.6931472
-locked	N/N	#x35.#x25.turn(until(is(x35 @ locked,x25)))	-1.0
-locked	N/N	#x39.#x27.turn(until(is(x39 @ locked,at(x27))))	-1.0
-locked	N/N	#x.x @ locked	1.609438
-locked	N/N	#x78.#x71.is(x78 @ locked,x71)	0.0
+should	(S\NP)/(S\NP)	#x546.#x441.#x440.x440 @ that(x546 @ x441)	-1.0
+west	N	west	0.0
+west	NP	west	0.0
+from	((S\NP)\(S\NP))/NP	#x.x	0.0
+from	((S\NP)\(S\NP))/NP	l(x,x)	-1.0
+from	(NP\NP)/NP	#x.#y.until(is(x,y))	0.0
+from	(NP\NP)/NP	#x435.#x433.is(x433,from(x435))	-1.0
+from	(NP\NP)/NP	l(x,x)	-1.0
+locked	N/N	#x477.x477 @ locked	-1.0
+locked	N/N	#x414.#x402.turn(until(is(x414 @ locked,at(x402))))	-1.0
+locked	N/N	#x453.#x445.is(x453 @ locked,at(x445))	-1.0
+locked	N/N	#x410.#x400.turn(until(is(x410 @ locked,x400)))	-1.0
+locked	N/N	#x391.#x388.is(x391 @ locked,x388)	-1.0
 locked	N/N	l(x,x)	-1.0
-you	NP	#x.verify(x)	2.5649493
-you	NP	#x.x	2.3978953
+you	NP	#x.verify(x)	0.0
+you	NP	#x.x	0.0
 you	NP	you	-1.0
-you	NP	#x.you(x)	-1.0
 you	NP	l(x,x)	-1.0
-you	NP/NP	#x.x	1.9459101
+you	NP/NP	#x.x	0.0
 you	NP/NP	#x.#y.x @ you(y)	-1.0
+you	NP/NP	#x.you(x)	-1.0
 you	NP/NP	l(x,x)	-1.0
 glass	N/N	#x.x @ glass	0.0
-in	NP/NP	#x.x	2.0794415
-in	(NP\NP)/NP	#x.#y.is(x,at(y))	-1.0
-in	(NP\NP)/NP	#x11.#x10.x10 @ x11	1.0986123
-in	(NP\NP)/NP	#x.#y.y @ at(x)	-1.0
-in	(NP\NP)/NP	#x59.#x58.is(x58,x59)	-1.0
-in	(NP\NP)/NP	#x60.#x58.is(x58,in(x60))	-1.0
-in	(NP\NP)/NP	#x41.#x28.turn(until(is(x28,x41)))	-1.0
-in	(NP\NP)/NP	#x.#y.until(is(x,y))	-1.0
-in	(NP\NP)/NP	#x.at(x)	-1.0
-in	(NP\NP)/NP	#x42.#x28.turn(until(is(x28,at(x42))))	-1.0
-in	(NP\NP)/NP	l(x,x)	-1.0
+in	(NP\NP)/NP	#x383.#x382.x382 @ x383	-1.0
 in	(NP\NP)/NP	#x.#y.is(y,at(x))	0.0
-old	N/N	#x.x @ old	1.609438
-is	N	#x.#y.is(x,y)	0.6931472
+in	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))	-1.0
+in	(NP\NP)/NP	#x.#y.until(is(x,y))	-1.0
+in	(NP\NP)/NP	l(x,x)	-1.0
+in	(NP\NP)/NP	#x417.#x403.turn(until(is(x403,at(x417))))	-1.0
+in	(NP\NP)/NP	#x434.#x433.is(x433,x434)	-1.0
+in	(NP\NP)/NP	#x416.#x403.turn(until(is(x403,x416)))	-1.0
+in	(NP\NP)/NP	#x435.#x433.is(x433,in(x435))	-1.0
+in	(NP\NP)/NP	#x.#y.is(x,at(y))	-1.0
+in	(NP\NP)/NP	#x.#y.y @ at(x)	-1.0
+in	(NP\NP)/NP	#x.at(x)	-1.0
+in	NP/NP	#x.x	0.0
+old	N/N	#x.x @ old	0.0
+is	N	#x.#y.is(x,y)	0.0
 is	N	#x.#y.is(y,x)	0.0
-is	N	#x.x	-1.0
+is	N	#x.x	0.0
 is	NP/NP	#x.#y.x @ is(y)	-1.0
 is	NP/NP	#x.is(x)	-1.0
 is	NP/NP	l(x,x)	-1.0
-is	NP/NP	#x106.#x22.is(x22,x106)	0.0
-is	NP/NP	#x107.#x102.x102	-1.0
-is	NP/NP	#x109.#x102.x102 @ x109	-1.0
-is	NP/NP	#x117.x117	-1.0
-an	NP/N	#x.x	1.3862944
-steps	N	#x5.steps(x5)	0.0
-doors	N	#x.doors(x)	0.6931472
+is	NP/NP	#x611.#x397.is(x397,x611)	-1.0
+is	NP/NP	#x614.#x609.x609 @ x614	-1.0
+is	NP/NP	#x615.#x609.x609	-1.0
+is	NP/NP	#x622.x622	-1.0
+an	NP/N	#x.x	0.0
+steps	N	#x377.steps(x377)	-1.0
+doors	N	#x.doors(x)	0.0
+2	N/N	#x414.#x402.turn(until(is(x414 @ 2,at(x402))))	-1.0
+2	N/N	#x453.#x445.is(x453 @ 2,at(x445))	-1.0
+2	N/N	#x410.#x400.turn(until(is(x410 @ 2,x400)))	-1.0
+2	N/N	#x391.#x388.is(x391 @ 2,x388)	-1.0
+2	N/N	#x393.x393 @ 2	-1.0
+2	N/N	l(x,x)	-1.0
 2	NP/N	#x.x @ 2	0.0
-at	(NP\NP)/NP	#x59.#x58.is(x58,x59)	0.0
-at	(NP\NP)/NP	#x60.#x58.is(x58,at(x60))	0.6931472
+2	NP/N	#x450.#x445.is(x450,2t(x445))	-1.0
+2	NP/N	l(x,x)	-1.0
+at	(NP\NP)/NP	#x434.#x433.is(x433,x434)	-1.0
+at	(NP\NP)/NP	#x435.#x433.is(x433,at(x435))	-1.0
+at	NP/NP	#x.at(x)	-1.0
 at	NP/NP	#x.#y.x @ at(y)	-1.0
-at	NP/NP	#x.at(x)	0.0
 at	NP/NP	l(x,x)	-1.0
-3	NP/N	#x6.x6 @ 3	0.0
-left	N	left	3.4339871
-left	NP	left	0.6931472
+3	NP/N	#x378.x378 @ 3	-1.0
+left	N/N	#x.x @ left	-1.0
+left	N/N	#x414.#x402.turn(until(is(x414 @ left,at(x402))))	-1.0
+left	N/N	#x453.#x445.is(x453 @ left,at(x445))	-1.0
+left	N/N	#x410.#x400.turn(until(is(x410 @ left,x400)))	-1.0
+left	N/N	#x391.#x388.is(x391 @ left,x388)	-1.0
+left	N/N	l(x,x)	-1.0
+left	N	left	0.0
+left	NP	left	-1.0
 left	NP	#x.left(x)	-1.0
 left	NP	l(x,x)	-1.0
-5	NP/N	#x7.x7 @ 5	0.0
+5	NP/N	#x379.x379 @ 5	-1.0
 carpet	N	#x.carpet(x)	0.0
-plant	N	#x.plant(x)	3.1780539
-plant	N	#x79.#x71.is(plant(x79),x71)	0.6931472
-plant	N	#x81.#x72.is(plant(x81),at(x72))	1.3862944
-spaces	N	#x.spaces(x)	-1.0
+plant	N	#x.plant(x)	0.0
+plant	N	#x452.#x444.is(plant(x452),x444)	-1.0
+plant	N	#x454.#x445.is(plant(x454),at(x445))	-1.0
+spaces	N	#x.spaces(x)	0.0
 steel	N/N	#x.x @ steel	0.0
-away	NP	at(south)	1.3862944
-be	S\NP	#x47.x47	1.609438
+away	(S\NP)\(S\NP)	#x.x	0.0
+away	(S\NP)\(S\NP)	l(x,x)	-1.0
+away	NP	at(south)	0.0
+away	NP	#x.away(x)	-1.0
+away	NP	away	-1.0
+away	NP	l(x,x)	-1.0
+be	S\NP	#x422.x422	-1.0
 be	S\NP	l(x,x)	-1.0
-be	(S\NP)/NP	#x.is(x)	-1.0
-be	(S\NP)/NP	#x.x	3.4339871
-be	(S\NP)/NP	#x74.#x71.is(x74,x71)	0.6931472
-be	(S\NP)/NP	#x75.#x72.is(x75,at(x72))	1.0986123
+be	(S\NP)/NP	#x.is(x)	0.0
+be	(S\NP)/NP	#x.x	0.0
+be	(S\NP)/NP	#x447.#x444.is(x447,x444)	-1.0
+be	(S\NP)/NP	#x448.#x445.is(x448,at(x445))	-1.0
 be	(S\NP)/NP	l(x,x)	-1.0
-south	N	south	-1.0
-south	NP	south	0.6931472
-north	N	north	1.3862944
-north	NP	north	0.6931472
-yellow	N/N	#x19.x19 @ yellow	0.0
-turn	S/NP	#x1.turn(x1)	2.0794415
+south	N	south	0.0
+south	NP	south	0.0
+north	N	north	0.0
+north	NP	north	0.0
+yellow	N/N	#x391.#x388.is(x391 @ yellow,x388)	-1.0
+yellow	N/N	#x393.x393 @ yellow	-1.0
+yellow	N/N	#x394.#x390.is(x394 @ yellow,at(x390))	-1.0
+yellow	N/N	#x414.#x402.turn(until(is(x414 @ yellow,at(x402))))	-1.0
+yellow	N/N	#x410.#x400.turn(until(is(x410 @ yellow,x400)))	-1.0
+yellow	N/N	l(x,x)	-1.0
+turn	S/NP	#x373.turn(x373)	-1.0
 turn	S/NP	l(x,x)	-1.0
-east	N	east	-1.0
-east	NP	east	1.3862944
+east	N	east	0.0
+east	NP	east	0.0
 east	NP	#x.east(x)	-1.0
 east	NP	l(x,x)	-1.0
-modern	N/N	#x35.#x25.turn(until(is(x35 @ modern,x25)))	-1.0
-modern	N/N	#x39.#x27.turn(until(is(x39 @ modern,at(x27))))	-1.0
-modern	N/N	#x.x @ modern	0.0
-modern	N/N	#x80.#x72.is(x80 @ modern,at(x72))	0.0
-modern	N/N	#x78.#x71.is(x78 @ modern,x71)	-1.0
+modern	N/N	#x.x @ modern	-1.0
+modern	N/N	#x414.#x402.turn(until(is(x414 @ modern,at(x402))))	-1.0
+modern	N/N	#x453.#x445.is(x453 @ modern,at(x445))	-1.0
+modern	N/N	#x410.#x400.turn(until(is(x410 @ modern,x400)))	-1.0
+modern	N/N	#x391.#x388.is(x391 @ modern,x388)	-1.0
 modern	N/N	l(x,x)	-1.0
-are	NP	#x.x	1.9459101
-are	NP	are	-1.0
+are	NP	#x.x	0.0
 are	NP	#x.are(x)	-1.0
+are	NP	are	-1.0
 are	NP	l(x,x)	-1.0
-are	NP/NP	#x88.x88	-1.0
-of	(NP\NP)/NP	#x.#y.is(x,at(y))	2.3025851
-of	(NP\NP)/NP	#x60.#x58.is(x58,of(x60))	-1.0
+are	NP/NP	#x88.x88	0.0
+of	(NP\NP)/NP	#x.#y.is(x,at(y))	0.0
+of	(NP\NP)/NP	#x.x	0.0
+of	(NP\NP)/NP	#x435.#x433.is(x433,of(x435))	-1.0
 of	(NP\NP)/NP	l(x,x)	-1.0
-of	(NP\NP)/NP	#x.x	3.0445225
-now	(S\NP)/(S\NP)	#x55.x55	1.3862944
-on	(NP\NP)/NP	#x.at(x)	-1.0
-on	(S\NP)/NP	#x24.#x23.turn(until(is(x23,at(x24))))	0.0
-a	NP/N	#x.x	3.3672957
-a	NP/N	#x76.#x71.is(x76,x71)	1.0986123
-a	NP/N	#x77.#x72.is(x77,at(x72))	1.609438
-a	NP/N	#x6.x6 @ a	-1.0
+now	(S\NP)/(S\NP)	#x430.x430	-1.0
+now	(S\NP)/(S\NP)	l(x,x)	-1.0
+on	(NP\NP)/NP	#x.at(x)	0.0
+on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))	0.0
+on	(NP\NP)/NP	#x435.#x433.is(x433,on(x435))	-1.0
+on	(NP\NP)/NP	l(x,x)	-1.0
+on	(S\NP)/NP	#x399.#x398.turn(until(is(x398,at(x399))))	-1.0
+a	NP/N	#x.x	0.0
+a	NP/N	#x449.#x444.is(x449,x444)	-1.0
+a	NP/N	#x450.#x445.is(x450,at(x445))	-1.0
+a	NP/N	#x.x @ a	-1.0
 a	NP/N	l(x,x)	-1.0
-move	S/NP	#x.move(x)	1.3862944
+move	S/NP	#x.move(x)	0.0
 move	S/NP	l(x,x)	-1.0
-go	S/NP	#x.move(x)	1.0986123
+go	S/NP	#x.move(x)	0.0
 lamp	N	lamp	0.0
-right	N	right	2.7725887
-right	NP	right	0.6931472
+right	N	right	0.0
+right	NP	right	-1.0
 right	NP	#x.right(x)	-1.0
 right	NP	l(x,x)	-1.0
 grey	N/N	#x.x @ grey	0.0
-potted	N/N	#x.x @ potted	3.1780539
-potted	N/N	#x78.#x71.is(x78 @ potted,x71)	0.6931472
-potted	N/N	#x80.#x72.is(x80 @ potted,at(x72))	1.3862944
-potted	N/N	#x35.#x25.turn(until(is(x35 @ potted,x25)))	-1.0
-potted	N/N	#x39.#x27.turn(until(is(x39 @ potted,at(x27))))	-1.0
+grey	N/N	#x414.#x402.turn(until(is(x414 @ grey,at(x402))))	-1.0
+grey	N/N	#x453.#x445.is(x453 @ grey,at(x445))	-1.0
+grey	N/N	#x410.#x400.turn(until(is(x410 @ grey,x400)))	-1.0
+grey	N/N	#x391.#x388.is(x391 @ grey,x388)	-1.0
+grey	N/N	l(x,x)	-1.0
+potted	N/N	#x.x @ potted	0.0
+potted	N/N	#x451.#x444.is(x451 @ potted,x444)	-1.0
+potted	N/N	#x453.#x445.is(x453 @ potted,at(x445))	-1.0
+potted	N/N	#x414.#x402.turn(until(is(x414 @ potted,at(x402))))	-1.0
+potted	N/N	#x410.#x400.turn(until(is(x410 @ potted,x400)))	-1.0
 potted	N/N	l(x,x)	-1.0
-the	NP/N	#x.at(x)	2.944439
-the	NP/N	#x.x	3.8918202
-the	NP/N	#x32.#x25.turn(until(is(x32,x25)))	0.6931472
-the	NP/N	#x34.#x27.turn(until(is(x34,at(x27))))	0.0
-the	NP/N	#x6.x6 @ the	-1.0
-the	NP/N	#x77.#x72.is(x77,thet(x72))	-1.0
+the	NP/N	#x.at(x)	0.0
+the	NP/N	#x.x	0.0
+the	NP/N	#x407.#x400.turn(until(is(x407,x400)))	-1.0
+the	NP/N	#x409.#x402.turn(until(is(x409,at(x402))))	-1.0
+the	NP/N	#x.x @ the	-1.0
+the	NP/N	#x450.#x445.is(x450,thet(x445))	-1.0
 the	NP/N	l(x,x)	-1.0
-the	(NP/NP)/N	#x.#y.y @ x	1.3862944
+the	(NP/NP)/N	#x.#y.y @ x	0.0
 the	(NP/NP)/N	#x.x	0.0
 the	(NP/NP)/N	l(x,x)	-1.0
 the	NP/NP	#x.#y.x @ the(y)	-1.0
 the	NP/NP	#x.the(x)	-1.0
 the	NP/NP	l(x,x)	-1.0
-the	NP/NP	#x91.x91	0.6931472
-the	NP/NP	#x106.#x22.the(x22,x106)	-1.0
-with	NP/NP	#x.x	2.5649493
-with	NP/NP	#x29.#x25.turn(until(is(x29,x25)))	0.6931472
-with	NP/NP	#x31.#x27.turn(until(is(x31,at(x27))))	0.0
-face	S/NP	#x.turn(x)	2.0794415
+the	NP/NP	#x549.x549	-1.0
+the	NP/NP	#x611.#x397.the(x397,x611)	-1.0
+with	NP/NP	#x.x	0.0
+with	NP/NP	#x404.#x400.turn(until(is(x404,x400)))	-1.0
+with	NP/NP	#x406.#x402.turn(until(is(x406,at(x402))))	-1.0
+face	S/NP	#x.turn(x)	0.0
 blue	N/N	#x.x @ blue	0.0
-painting	N	#x.painting(x)	1.9459101
-painting	NP	#x.painting(x)	-1.0
-there	NP	#x.verify(x)	3.3322046
-there	NP	there	-1.0
+painting	N	#x.painting(x)	0.0
+painting	NP	#x.painting(x)	0.0
+there	NP	#x.verify(x)	0.0
 there	NP	#x.there(x)	-1.0
+there	NP	there	-1.0
 there	NP	l(x,x)	-1.0
-until	NP/NP	#x.#y.x @ until(y)	-1.0
-until	NP/NP	#x.until(x)	2.3978953
+until	NP/NP	#x.#y.x @ until(y)	0.0
+until	NP/NP	#x.until(x)	0.0
 until	NP/NP	l(x,x)	-1.0
-until	NP/NP	#x127.until(is(x127,at(right)))	-1.0
-until	NP/NP	#x106.#x22.until(x22,x106)	-1.0
-front	NP	front	2.4849067
+until	NP/NP	#x714.until(is(x714,at(right)))	-1.0
+until	NP/NP	#x611.#x397.until(x397,x611)	-1.0
+front	NP	front	0.0
 front	NP	#x.front(x)	-1.0
 front	NP	l(x,x)	-1.0
-to	((S\NP)\(S\NP))/NP	#x.#y.y @ x	3.1780539
-to	((S\NP)\(S\NP))/NP	#x82.#x73.is(x73,x82)	0.6931472
-to	((S\NP)\(S\NP))/NP	#x83.#x73.is(x73,at(x83))	1.0986123
+to	((S\NP)\(S\NP))/NP	#x.#y.y @ x	0.0
+to	((S\NP)\(S\NP))/NP	#x455.#x446.is(x446,x455)	-1.0
+to	((S\NP)\(S\NP))/NP	#x456.#x446.is(x446,at(x456))	-1.0
 to	((S\NP)\(S\NP))/NP	l(x,x)	-1.0
-to	(NP\NP)/NP	#x.#y.y @ at(x)	1.7917595
-to	(NP\NP)/NP	#x.#y.y @ x	2.5649493
-to	(NP\NP)/NP	#x.at(x)	-1.0
-to	(NP\NP)/NP	#x41.#x28.turn(until(is(x28,x41)))	0.0
-to	(NP\NP)/NP	#x42.#x28.turn(until(is(x28,at(x42))))	0.0
-to	(NP\NP)/NP	#x60.#x58.is(x58,to(x60))	-1.0
+to	(NP\NP)/NP	#x.#y.y @ at(x)	0.0
+to	(NP\NP)/NP	#x.#y.y @ x	0.0
+to	(NP\NP)/NP	#x.at(x)	0.0
+to	(NP\NP)/NP	#x416.#x403.turn(until(is(x403,x416)))	-1.0
+to	(NP\NP)/NP	#x417.#x403.turn(until(is(x403,at(x417))))	-1.0
+to	(NP\NP)/NP	#x435.#x433.is(x433,to(x435))	-1.0
 to	(NP\NP)/NP	l(x,x)	-1.0
-wall	N	#x.wall(x)	1.0986123
-wall	NP	#x.wall(x)	-1.0
-open	N/N	#x.x @ open	2.4849067
-open	N/N	#x35.#x25.turn(until(is(x35 @ open,x25)))	0.6931472
-open	N/N	#x39.#x27.turn(until(is(x39 @ open,at(x27))))	0.0
-open	N/N	#x80.#x72.is(x80 @ open,at(x72))	-1.0
-open	N/N	#x78.#x71.is(x78 @ open,x71)	-1.0
+wall	N	#x.wall(x)	0.0
+wall	NP	#x.wall(x)	0.0
+open	N/N	#x.x @ open	0.0
+open	N/N	#x410.#x400.turn(until(is(x410 @ open,x400)))	-1.0
+open	N/N	#x414.#x402.turn(until(is(x414 @ open,at(x402))))	-1.0
+open	N/N	#x453.#x445.is(x453 @ open,at(x445))	-1.0
+open	N/N	#x391.#x388.is(x391 @ open,x388)	-1.0
 open	N/N	l(x,x)	-1.0
-walk	S/NP	#x.#y.move(x @ y)	1.0986123
-walk	S/NP	#x.move(x)	1.3862944
+walk	S/NP	#x.#y.move(x @ y)	0.0
+walk	S/NP	#x.move(x)	0.0
 walk	S/NP	#x.walk(x)	-1.0
 walk	S/NP	l(x,x)	-1.0

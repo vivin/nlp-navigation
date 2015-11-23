@@ -37,3 +37,5 @@ be	(S\NP)/NP
 at	NP/NP
 is	NP/NP
 in	NP/NP
+your	NP/N
+door	N

@@ -22,6 +22,7 @@ go	S/NP	#x.move(x)
 grey	N/N	#x.x @ grey
 grey	N/N	#x90.x90 @ grey
 hall	N	#x.hall(x)
+in	(NP\NP)/NP	#x.#y.is(y,at(x))
 in	NP/NP	#x.x
 is	N	#x.#y.is(x,y)
 is	N	#x.#y.is(y,x)
@@ -33,12 +34,14 @@ move	S/NP	#x.move(x)
 north	N	north
 north	NP	north
 of	(NP\NP)/NP	#x.#y.is(x,at(y))
+of	(NP\NP)/NP	#x.x
 old	N/N	#x.x @ old
 on	(NP\NP)/NP	#x.at(x)
 open	N/N	#x.x @ open
 painting	N	#x.painting(x)
 painting	NP	#x.painting(x)
 plant	N	#x.plant(x)
+potted	N/N	#x.x @ potted
 potted	N/N	#x.x @ potted
 red	N/N	#x.x @ red
 right	N	right
@@ -72,7 +75,6 @@ you	NP	#x.verify(x)
 you	NP	#x.x
 you	NP/NP	#x.x
 your	NP/N	#x.x
-of	(NP\NP)/NP	#x.x
-should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
-potted	N/N	#x.x @ potted
-in	(NP\NP)/NP	#x.#y.is(y,at(x))
+away	(S\NP)\(S\NP)	#x.x
+on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
+from	((S\NP)\(S\NP))/NP	#x.x
