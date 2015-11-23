@@ -23,7 +23,6 @@ grey	N/N	#x.x @ grey
 grey	N/N	#x90.x90 @ grey
 hall	N	#x.hall(x)
 in	NP/NP	#x.x
-in	NP/NP	#x88.x88
 is	N	#x.#y.is(x,y)
 is	N	#x.#y.is(y,x)
 is	N	#x.x
@@ -73,3 +72,7 @@ you	NP	#x.verify(x)
 you	NP	#x.x
 you	NP/NP	#x.x
 your	NP/N	#x.x
+of	(NP\NP)/NP	#x.x
+should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
+potted	N/N	#x.x @ potted
+in	(NP\NP)/NP	#x.#y.is(y,at(x))

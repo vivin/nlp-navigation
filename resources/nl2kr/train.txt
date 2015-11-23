@@ -34,3 +34,7 @@ you should be to the north of a locked door	verify(that(is(door(locked), at(nort
 you should now be in front of a potted plant	verify(that(is(plant(potted), at(front))))
 there should be an old painting at the left	verify(that(is(painting(old), at(left))))
 there should be an old painting at your left	verify(that(is(painting(old), at(left))))
+there should be a locked door to your left	verify(that(is(door(locked), at(left))))
+there should be a potted plant to the left	verify(that(is(plant(potted), at(left))))
+there should be a potted plant in front of you	verify(that(is(plant(potted), at(front))))
+there should be a potted plant to the left of you	verify(that(is(plant(potted), at(left))))
