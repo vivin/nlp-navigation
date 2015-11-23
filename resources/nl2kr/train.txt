@@ -41,5 +41,3 @@ there should be a potted plant to the left of you	verify(that(is(plant(potted), 
 you should be 2 spaces away from a locked door on the left	verify(that(is(door(locked), at(left, spaces(2)))))
 you should be 2 spaces away from a locked door on your left	verify(that(is(door(locked), at(left, spaces(2)))))
 you should now be 2 spaces away from a locked door on the left	verify(that(is(door(locked), at(left, spaces(2)))))
-there should be a locked door 2 spaces away from you on the left	verify(that(is(door(locked), at(left, spaces(2)))))
-there should be a locked door on the left 2 spaces away from you	verify(that(is(door(locked), at(left, spaces(2)))))
