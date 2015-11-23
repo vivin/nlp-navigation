@@ -1446,20 +1446,19 @@ var simulation = (function () {
                         if (object.position.relative === direction &&
                             object.name === condition.object.name) {
                             if (typeof (object.attribute) === 'string') {
-                                if (typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute) {
+                                if ((typeof( condition.object.attributes) == 'undefined') ||
+                                    ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
                                     flag = true
                                     break
                                 }
                             }
                             else {
-                                if (typeof(condition.object.attributes[0]) != 'undefined') {
-                                    if (condition.object.attributes[0].name === object.attribute.name
-                                        && condition.object.attributes[0].attributes[0] == object.attribute.attribute) {
+                                if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
+                                    condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
                                         flag = true
                                         break
                                     }
                                 }
-                            }
                         }
                     }
                 }
