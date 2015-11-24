@@ -22,6 +22,7 @@ glass	N/N	#x.x @ glass
 go	S/NP	#x.move(x)
 grey	N/N	#x.x @ grey
 hall	N	#x.hall(x)
+hall	N	#x.x @ #y.#z.hall(z @ y)
 in	(NP\NP)/NP	#x.#y.is(y,at(x))
 in	NP/NP	#x.x
 is	N	#x.x
@@ -45,6 +46,8 @@ plant	N	#x.plant(x)
 potted	N/N	#x.x @ potted
 red	N/N	#x.x @ red
 right	N	right
+see	(S\NP)/NP	#x.x
+see	(S\(S\NP))/NP	#x.#y.y @ is(x)
 should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
 south	NP	south
 south	N	south
@@ -61,13 +64,16 @@ to	(NP\NP)/NP	#x.#y.y @ x
 to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
 until	NP/NP	#x.until(x)
 until	NP/NP	#x.#y.x @ until(y)
+walk	(S\NP)/NP	#x.#y.move(x @ y)
 walk	S/NP	#x.move(x)
 walk	S/NP	#x.#y.move(x @ y)
 wall	NP	#x.wall(x)
 wall	N	#x.wall(x)
 west	NP	west
 west	N	west
+with	((N/N)/(N/N))\(S\NP)	#x.x
 with	NP/NP	#x.x
+you	NP/NP	#x.is(x)
 you	NP/NP	#x.x
 you	NP	#x.verify(x)
 you	NP	#x.x
