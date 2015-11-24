@@ -2,8 +2,8 @@ door	NP	#x.door(x)	-1.0
 door	N	#x.door(x)	3.4011974
 door	N	#x77.#x66.turn(until(is(door(x77),x66)))	0.6931472
 door	N	#x81.#x68.turn(until(is(door(x81),at(x68))))	0.0
-hall	N	#x.hall(x)	1.9459101
-hall	N	#x.x @ #y.#z.hall(z @ y)	0.0
+hallway	N	#x.hallway(x)	1.9459101
+hallway	N	#x.x @ #y.#z.hallway(z @ y)	0.0
 main	N/N	#x.x @ main	0.6931472
 your	NP/N	#x.x	2.0794415
 your	NP/N	#x116.#x111.is(x116,yourt(x111))	-1.0

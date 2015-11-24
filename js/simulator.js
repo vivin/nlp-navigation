@@ -1285,7 +1285,7 @@ var robot = (function (world) {
                     attribute: random.attribute
                 };
 
-                if(useDirection) {
+                if(useDirection || object.name === "hallway") {
                     object.direction = random.position.absolute;
                 }
             } while (object.name === "wall");
@@ -1376,6 +1376,9 @@ var robot = (function (world) {
             if (!isFirst) {
                 lastOrientation = currentOrientation;
                 currentOrientation = previousLocation.compare(coordinate.location).absolute;
+                if(currentOrientation === lastOrientation || locations.oppositeAbsolute[currentOrientation] === lastOrientation) {
+                    paths[i - 1].turnSource.useRelativeDirection = false;
+                }
 
                 turn(currentOrientation);
                 start(coordinate.location.row, coordinate.location.column);
@@ -1400,6 +1403,7 @@ var robot = (function (world) {
             if (coordinate.turnSource.type === "conditional") {
                 coordinate.turnSource.reference = generateTurnReference(scanData);
             }
+
 
             paths.push(coordinate);
 

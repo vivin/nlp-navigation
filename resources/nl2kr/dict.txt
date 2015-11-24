@@ -21,8 +21,8 @@ front	NP	front
 glass	N/N	#x.x @ glass
 go	S/NP	#x.move(x)
 grey	N/N	#x.x @ grey
-hall	N	#x.hall(x)
-hall	N	#x.x @ #y.#z.hall(z @ y)
+hallway	N	#x.hallway(x)
+hallway	N	#x.x @ #y.#z.hallway(z @ y)
 in	(NP\NP)/NP	#x.#y.is(y,at(x))
 in	NP/NP	#x.x
 is	N	#x.x
