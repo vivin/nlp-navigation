@@ -1107,12 +1107,138 @@ var robot = (function (world) {
         return result;
     }
 
+    function generateFormal(paths) {
+        var templates = {
+            start: "start({0}, {1})",
+            turn: {
+                unconditional: "turn({0})",
+                conditional: {
+                    withoutDirection: {
+                        withoutAttribute: "turn(until(is({0})))",
+                        withAttribute: "turn(until(is({0}({1}))))",
+                        withNestedAttribute: "turn(until(is({0}({1}({2})))))"
+                    },
+                    withDirection: {
+                        withoutAttribute: "turn(until(is({0}, at({1}))))",
+                        withAttribute: "turn(until(is({0}({1}), at({2}))))",
+                        withNestedAttribute: "turn(until(is({0}({1}({2})), at({3}))))"
+                    }
+                }
+            },
+            move: {
+                unconditional: "move(steps({0}))",
+                conditional: {
+                    withoutDirection: {
+                        withoutAttribute: "move(until(is({0})))",
+                        withAttribute: "move(until(is({0}({1}))))",
+                        withNestedAttribute: "move(until(is({0}({1}({2})))))"
+                    },
+                    withDirection: {
+                        withoutAttribute: "move(until(is({0}, at({1}))))",
+                        withAttribute: "move(until(is({0}({1}), at({2}))))",
+                        withNestedAttribute: "move(until(is({0}({1}({2})), at({3}))))"
+                    }
+                }
+            },
+            verify: {
+                withoutAttribute: "verify(that(is({0}, at({1}, spaces({2})))))",
+                withAttribute: "verify(that(is({0}({1}), at({2}, spaces({3})))))",
+                withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}, spaces({4})))))"
+            }
+        };
+
+        var instructions = [];
+        var orientation = locations.absolute.north;
+        for(var i = 0; i < paths.length - 1; i++) {
+
+            var source = paths[i];
+            var sourceLocation = locations.create(source.location.row, source.location.column);
+
+            var destination = paths[i + 1];
+            var destinationLocation = locations.create(destination.location.row, destination.location.column);
+
+            var comparison = sourceLocation.compare(destinationLocation, orientation);
+            orientation = comparison.absolute;
+
+            if(i === 0) {
+                instructions.push(templates.start.interpolate(source.location.row, source.location.column));
+            }
+
+            var direction;
+
+            if(source.turnSource.type === "unconditional") {
+                instructions.push(templates.turn.unconditional.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
+            } else {
+                var turnReference = source.turnSource.reference;
+
+                if(typeof turnReference.direction === "undefined" ) {
+                    if(turnReference.attribute === null) {
+                        instructions.push(templates.turn.conditional.withoutDirection.withoutAttribute.interpolate(turnReference.name));
+                    } else if(typeof turnReference.attribute === "string") {
+                        instructions.push(templates.turn.conditional.withoutDirection.withAttribute.interpolate(turnReference.name, turnReference.attribute));
+                    } else {
+                        instructions.push(templates.turn.conditional.withoutDirection.withNestedAttribute.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute));
+                    }
+                } else {
+                    direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
+                    if(turnReference.attribute === null) {
+                        instructions.push(templates.turn.conditional.withDirection.withoutAttribute.interpolate(turnReference.name, direction));
+                    } else if(typeof turnReference.attribute === "string") {
+                        instructions.push(templates.turn.conditional.withDirection.withAttribute.interpolate(turnReference.name, turnReference.attribute, direction));
+                    } else {
+                        instructions.push(templates.turn.conditional.withDirection.withNestedAttribute.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute, direction));
+                    }
+                }
+            }
+
+            if(destination.moveDestination.type === "unconditional") {
+                instructions.push(templates.move.unconditional.interpolate(comparison.distance));
+            } else {
+                var moveReference = destination.moveDestination.reference;
+
+                if(typeof moveReference.direction === "undefined" ) {
+                    if(moveReference.attribute === null) {
+                        instructions.push(templates.move.conditional.withoutDirection.withoutAttribute.interpolate(moveReference.name));
+                    } else if(typeof moveReference.attribute === "string") {
+                        instructions.push(templates.move.conditional.withoutDirection.withAttribute.interpolate(moveReference.name, moveReference.attribute));
+                    } else {
+                        instructions.push(templates.move.conditional.withoutDirection.withNestedAttribute.interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute));
+                    }
+                } else {
+                    direction = destination.moveDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][moveReference.direction] : moveReference.direction;
+                    if(moveReference.attribute === null) {
+                        instructions.push(templates.move.conditional.withDirection.withoutAttribute.interpolate(moveReference.name, direction));
+                    } else if(typeof moveReference.attribute === "string") {
+                        instructions.push(templates.move.conditional.withDirection.withAttribute.interpolate(moveReference.name, moveReference.attribute, direction));
+                    } else {
+                        instructions.push(templates.move.conditional.withDirection.withNestedAttribute.interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute, direction));
+                    }
+                }
+            }
+
+            if(i === paths.length - 2) {
+                var verifyReference = destination.verifyDestination.reference;
+
+                direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
+                if(verifyReference.attribute === null) {
+                    instructions.push(templates.verify.withoutAttribute.interpolate(verifyReference.name, direction, verifyReference.distance));
+                } else if(typeof verifyReference.attribute === "string") {
+                    instructions.push(templates.verify.withAttribute.interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                } else {
+                    instructions.push(templates.verify.withNestedAttribute.interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                }
+            }
+        }
+
+        return instructions;
+    }
+
     function generatePath() {
         function findNextLocation(scanData, lastDirection) {
             var candidateTurnPoints = Object.keys(scanData.lineOfSight).reduce(function (candidateTurnPoints, direction) {
                 if (scanData.lineOfSight[direction].turnPoints.length > 0 &&
-                    (lastDirection == null ||
-                    (lastDirection !== locations.oppositeAbsolute[direction]))) {
+                    (lastDirection === null ||
+                    (lastDirection !== locations.oppositeAbsolute[direction] && lastDirection !== direction))) {
                     candidateTurnPoints[direction] = scanData.lineOfSight[direction].turnPoints;
                 }
 
@@ -1150,14 +1276,18 @@ var robot = (function (world) {
         }
 
         function generateMoveReference(scanData) {
+            var useDirection = Math.floor(Math.random() * 2) === 1;
             var object = null;
             do {
                 var random = scanData.immediate.objects[Math.floor(Math.random() * scanData.immediate.objects.length)];
                 object = {
                     name: random.name,
-                    attribute: random.attribute,
-                    direction: random.position.absolute
+                    attribute: random.attribute
                 };
+
+                if(useDirection) {
+                    object.direction = random.position.absolute;
+                }
             } while (object.name === "wall");
 
             return object;
@@ -1195,6 +1325,11 @@ var robot = (function (world) {
                     var rows = Math.abs(currentLocation.row - object.position.row);
                     var columns = Math.abs(currentLocation.column - object.position.column);
                     var distance = (rows > columns) ? rows : columns;
+                    if(rows === 0) {
+                        columns--;
+                    } else if(columns === 0) {
+                        rows--;
+                    }
 
                     references.push({
                         name: object.name,
@@ -1231,7 +1366,11 @@ var robot = (function (world) {
 
             coordinate.location = isFirst ? randomLocation : findNextLocation(scanData, lastDirection);
             if (i >= 2) {
-                while (coordinate.location.compare(paths[i - 2].location).coincident) {
+                while (coordinate.location.compare(paths[i - 2].location).coincident || coordinate.location.compare(previousLocation).coincident) {
+                    coordinate.location = findNextLocation(scanData, lastDirection);
+                }
+            } else if(i === 1) {
+                while (coordinate.location.compare(previousLocation).coincident) {
                     coordinate.location = findNextLocation(scanData, lastDirection);
                 }
             }
@@ -1265,7 +1404,10 @@ var robot = (function (world) {
             }
 
             paths.push(coordinate);
-            lastDirection = currentOrientation;
+
+            if(!isFirst) {
+                lastDirection = currentOrientation;
+            }
 
             if (isLast) {
                 var lastLocation = coordinate.location;
@@ -1290,7 +1432,7 @@ var robot = (function (world) {
 
                 coordinate.verifyDestination = {
                     useRelativeDirection: Math.floor(Math.random() * 2) === 1,
-                    reference: generateVerifyReference(coordinate.location, currentOrientation, scanData)
+                    reference: generateVerifyReference(coordinate.location, direction, scanData)
                 };
 
                 paths.push(coordinate);
@@ -1393,46 +1535,49 @@ var robot = (function (world) {
         },
         parse: parser.parse,
         generatePath: generatePath,
-        formal: formal
+        generateFormal: function() {
+            return generateFormal(generatePath());
+        }
     };
 
 })(world);
 
 var simulation = (function () {
     function scanAndCheck(until) {
-        var flag = false
-        scan = robot.scan()
+        var i;
+        var flag = false;
+        var scan = robot.scan();
         until.forEach(function (condition) {
-            direction = null
-            distance = null
-            if (typeof(condition.orientation) != 'undefined') {
-                direction = condition.orientation.direction
+            var direction = null;
+            var distance = null;
+            if (typeof condition.orientation  != 'undefined') {
+                direction = condition.orientation.direction;
                 if (typeof(condition.orientation.distance) != 'undefined') {
-                    distance = parseInt(condition.orientation.distance.magnitude) + 1
+                    distance = parseInt(condition.orientation.distance.magnitude) + 1;
                 }
             }
             if (distance == null) {
                 for (i = 0; i < scan.immediate.objects.length; i++) {
-                    object = scan.immediate.objects[i]
+                    var object = scan.immediate.objects[i];
                     if (object.name === condition.object.name) {
                         if (typeof (object.attribute) === 'string') {
                             if ((typeof( condition.object.attributes) == 'undefined') ||
                                 ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
                                 if (direction != null)
                                     if (direction !== object.position.relative )
-                                        continue
-                                flag = true
-                                break
+                                        continue;
+                                flag = true;
+                                break;
                             }
                         }
                         else {
                             if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
                                 condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
                                     if (direction != null)
-                                        if (direction !== object.position.relative )
-                                            continue
-                                    flag = true
-                                    break
+                                        if (direction !== object.position.relative)
+                                            continue;
+                                    flag = true;
+                                    break;
                             }
                         }
                     }
@@ -1440,23 +1585,23 @@ var simulation = (function () {
             }
             else if (direction != null && distance != null) {
                 for (i = 0; i < scan.lineOfSight[robot.orientation()].objects.length; i++) {
-                    object = scan.lineOfSight[robot.orientation()].objects[i]
-                    currentPosition = locations.create(object.position.row, object.position.column)
+                    object = scan.lineOfSight[robot.orientation()].objects[i];
+                    var currentPosition = locations.create(object.position.row, object.position.column);
                     if (distance == currentPosition.compare(robot.location()).distance) {
                         if (object.position.relative === direction &&
                             object.name === condition.object.name) {
                             if (typeof (object.attribute) === 'string') {
                                 if ((typeof( condition.object.attributes) == 'undefined') ||
                                     ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
-                                    flag = true
-                                    break
+                                    flag = true;
+                                    break;
                                 }
                             }
                             else {
                                 if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
                                     condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
-                                        flag = true
-                                        break
+                                        flag = true;
+                                        break;
                                     }
                                 }
                         }
@@ -1464,48 +1609,52 @@ var simulation = (function () {
                 }
             }
         });
-        return flag
+
+        return flag;
     }
 
     function simulate(sentence) {
         if (sentence.length != 0) {
             var object = parser.parse(sentence).forEach(function (element) {
-                var action = element.instruction
-                //alert(action)
-                if (action === 'start')
-                    robot.start(element.arguments.row, element.arguments.column)
-                if (action === 'turn') {
-                    if (element.arguments.direction != null)
-                        robot.turn(element.arguments.direction)
-                    else if (element.arguments.until != null) {
-                        numberOfTurns = 0
-                        do {
-                            if (scanAndCheck(element.arguments.until)) break;
-                            else robot.turn('left')
-                            numberOfTurns += 1
-                        } while (numberOfTurns < 4)
-                    }
-                }
-                if (action === 'move') {
-                    var scan = robot.scan()
-                    if (scan.immediate.paths.indexOf(scan.orientation) >= 0) {
-                        if (element.arguments.distance != null) {
-                            robot.move(element.arguments.distance.magnitude)
-                        }
-                        else
+                setTimeout(function() {
+                    var scan;
+                    var action = element.instruction;
+                    //alert(action)
+                    if (action === 'start')
+                        robot.start(element.arguments.row, element.arguments.column);
+                    if (action === 'turn') {
+                        if (element.arguments.direction != null)
+                            robot.turn(element.arguments.direction);
+                        else if (element.arguments.until != null) {
+                            var numberOfTurns = 0;
                             do {
-                                robot.move()
                                 if (scanAndCheck(element.arguments.until)) break;
-                            } while (true)
+                                else robot.turn('left');
+                                numberOfTurns += 1
+                            } while (numberOfTurns < 4)
+                        }
                     }
-                }
-                if (action === 'verify') {
-                    var scan = robot.scan()
-                    if (element.arguments.that != null) {
-                        if (!scanAndCheck(element.arguments.that))
-                            throw new Error('Location not matched')
+                    if (action === 'move') {
+                        scan = robot.scan();
+                        if (scan.immediate.paths.indexOf(scan.orientation) >= 0) {
+                            if (element.arguments.distance != null) {
+                                robot.move(element.arguments.distance.magnitude);
+                            }
+                            else
+                                do {
+                                    robot.move();
+                                    if (scanAndCheck(element.arguments.until)) break;
+                                } while (true)
+                        }
                     }
-                }
+                    if (action === 'verify') {
+                        scan = robot.scan();
+                        if (element.arguments.that != null) {
+                            if (!scanAndCheck(element.arguments.that))
+                                throw new Error('Location not matched');
+                        }
+                    }
+                }, 1500);
             });
         }
     }
