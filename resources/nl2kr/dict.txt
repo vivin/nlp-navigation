@@ -1,80 +1,74 @@
 2	NP/N	#x.x @ 2
-a	NP/N	#x.x
 an	NP/N	#x.x
+a	NP/N	#x.x
+are	NP/NP	#x.x
 are	NP	#x.x
-are	NP/NP	#x88.x88
 away	NP	at(south)
+away	(S\NP)\(S\NP)	#x.x
 be	(S\NP)/NP	#x.is(x)
 be	(S\NP)/NP	#x.x
 blue	N/N	#x.x @ blue
 carpet	N	#x.carpet(x)
-door	N	#x.door(x)
 door	NP	#x.door(x)
-doors	N	#x.doors(x)
+door	N	#x.door(x)
 east	N	east
 east	NP	east
 face	S/NP	#x.turn(x)
 from	(NP\NP)/NP	#x.#y.until(is(x,y))
+from	((S\NP)\(S\NP))/NP	#x.x
 front	NP	front
 front	NP	front
 glass	N/N	#x.x @ glass
 go	S/NP	#x.move(x)
 grey	N/N	#x.x @ grey
-grey	N/N	#x90.x90 @ grey
 hall	N	#x.hall(x)
 in	(NP\NP)/NP	#x.#y.is(y,at(x))
 in	NP/NP	#x.x
+is	N	#x.x
 is	N	#x.#y.is(x,y)
 is	N	#x.#y.is(y,x)
-is	N	#x.x
 lamp	N	lamp
 left	N	left
 main	N/N	#x.x @ main
 move	S/NP	#x.move(x)
 north	N	north
 north	NP	north
-of	(NP\NP)/NP	#x.#y.is(x,at(y))
 of	(NP\NP)/NP	#x.x
+of	(NP\NP)/NP	#x.#y.is(x,at(y))
 old	N/N	#x.x @ old
 on	(NP\NP)/NP	#x.at(x)
+on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
 open	N/N	#x.x @ open
-painting	N	#x.painting(x)
 painting	NP	#x.painting(x)
+painting	N	#x.painting(x)
 plant	N	#x.plant(x)
-potted	N/N	#x.x @ potted
 potted	N/N	#x.x @ potted
 red	N/N	#x.x @ red
 right	N	right
 should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
-south	N	south
 south	NP	south
+south	N	south
 spaces	N	#x.spaces(x)
 steel	N/N	#x.x @ steel
-the	(NP/NP)/N	#x.#y.y @ x
 the	(NP/NP)/N	#x.x
+the	(NP/NP)/N	#x.#y.y @ x
 the	NP/N	#x.at(x)
 the	NP/N	#x.x
-the	NP/N	#x89.x89
 there	NP	#x.verify(x)
-to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
+to	(NP\NP)/NP	#x.at(x)
 to	(NP\NP)/NP	#x.#y.y @ at(x)
 to	(NP\NP)/NP	#x.#y.y @ x
-to	(NP\NP)/NP	#x.at(x)
-until	NP/NP	#x.#y.x @ until(y)
+to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
 until	NP/NP	#x.until(x)
-until	NP/NP	#x88.until(x88)
-walk	S/NP	#x.#y.move(x @ y)
+until	NP/NP	#x.#y.x @ until(y)
 walk	S/NP	#x.move(x)
-walk	S/NP	#x87.move(x87)
-wall	N	#x.wall(x)
+walk	S/NP	#x.#y.move(x @ y)
 wall	NP	#x.wall(x)
-west	N	west
+wall	N	#x.wall(x)
 west	NP	west
+west	N	west
 with	NP/NP	#x.x
+you	NP/NP	#x.x
 you	NP	#x.verify(x)
 you	NP	#x.x
-you	NP/NP	#x.x
 your	NP/N	#x.x
-away	(S\NP)\(S\NP)	#x.x
-on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
-from	((S\NP)\(S\NP))/NP	#x.x
