@@ -1325,10 +1325,8 @@ var robot = (function (world) {
                     var rows = Math.abs(currentLocation.row - object.position.row);
                     var columns = Math.abs(currentLocation.column - object.position.column);
                     var distance = (rows > columns) ? rows : columns;
-                    if(rows === 0) {
-                        columns--;
-                    } else if(columns === 0) {
-                        rows--;
+                    if(rows === 0 || columns === 0) {
+                        distance--;
                     }
 
                     references.push({
@@ -1616,45 +1614,43 @@ var simulation = (function () {
     function simulate(sentence) {
         if (sentence.length != 0) {
             var object = parser.parse(sentence).forEach(function (element) {
-                setTimeout(function() {
-                    var scan;
-                    var action = element.instruction;
-                    //alert(action)
-                    if (action === 'start')
-                        robot.start(element.arguments.row, element.arguments.column);
-                    if (action === 'turn') {
-                        if (element.arguments.direction != null)
-                            robot.turn(element.arguments.direction);
-                        else if (element.arguments.until != null) {
-                            var numberOfTurns = 0;
+                var scan;
+                var action = element.instruction;
+                //alert(action)
+                if (action === 'start')
+                    robot.start(element.arguments.row, element.arguments.column);
+                if (action === 'turn') {
+                    if (element.arguments.direction != null)
+                        robot.turn(element.arguments.direction);
+                    else if (element.arguments.until != null) {
+                        var numberOfTurns = 0;
+                        do {
+                            if (scanAndCheck(element.arguments.until)) break;
+                            else robot.turn('left');
+                            numberOfTurns += 1
+                        } while (numberOfTurns < 4)
+                    }
+                }
+                if (action === 'move') {
+                    scan = robot.scan();
+                    if (scan.immediate.paths.indexOf(scan.orientation) >= 0) {
+                        if (element.arguments.distance != null) {
+                            robot.move(element.arguments.distance.magnitude);
+                        }
+                        else
                             do {
+                                robot.move();
                                 if (scanAndCheck(element.arguments.until)) break;
-                                else robot.turn('left');
-                                numberOfTurns += 1
-                            } while (numberOfTurns < 4)
-                        }
+                            } while (true)
                     }
-                    if (action === 'move') {
-                        scan = robot.scan();
-                        if (scan.immediate.paths.indexOf(scan.orientation) >= 0) {
-                            if (element.arguments.distance != null) {
-                                robot.move(element.arguments.distance.magnitude);
-                            }
-                            else
-                                do {
-                                    robot.move();
-                                    if (scanAndCheck(element.arguments.until)) break;
-                                } while (true)
-                        }
+                }
+                if (action === 'verify') {
+                    scan = robot.scan();
+                    if (element.arguments.that != null) {
+                        if (!scanAndCheck(element.arguments.that))
+                            throw new Error('Location not matched');
                     }
-                    if (action === 'verify') {
-                        scan = robot.scan();
-                        if (element.arguments.that != null) {
-                            if (!scanAndCheck(element.arguments.that))
-                                throw new Error('Location not matched');
-                        }
-                    }
-                }, 1500);
+                }
             });
         }
     }
