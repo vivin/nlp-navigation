@@ -10,7 +10,7 @@ var locations = (function () {
         left: "left",
         right: "right",
         front: "front",
-        behind: "behind"
+        back: "behind"
     };
 
     var absoluteFromRelative = {
@@ -18,37 +18,37 @@ var locations = (function () {
             left: absolute.west,
             right: absolute.east,
             front: absolute.north,
-            behind: absolute.south
+            back: absolute.south
         },
         south: {
             left: absolute.east,
             right: absolute.west,
             front: absolute.south,
-            behind: absolute.north
+            back: absolute.north
         },
         east: {
             left: absolute.north,
             right: absolute.south,
             front: absolute.east,
-            behind: absolute.west
+            back: absolute.west
         },
         west: {
             left: absolute.south,
             right: absolute.north,
             front: absolute.west,
-            behind: absolute.east
+            back: absolute.east
         }
     };
 
     var relativeFromAbsolute = {
         north: {
             north: relative.front,
-            south: relative.behind,
+            south: relative.back,
             east: relative.right,
             west: relative.left
         },
         south: {
-            north: relative.behind,
+            north: relative.back,
             south: relative.front,
             east: relative.left,
             west: relative.right
@@ -57,12 +57,12 @@ var locations = (function () {
             north: relative.left,
             south: relative.right,
             east: relative.front,
-            west: relative.behind
+            west: relative.back
         },
         west: {
             north: relative.right,
             south: relative.left,
-            east: relative.behind,
+            east: relative.back,
             west: relative.front
         }
     };
@@ -77,8 +77,8 @@ var locations = (function () {
     var oppositeRelative = {
         left: relative.right,
         right: relative.left,
-        front: relative.behind,
-        behind: relative.front
+        front: relative.back,
+        back: relative.front
     };
 
     function create(row, column) {
@@ -1145,9 +1145,9 @@ var robot = (function (world) {
                     withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}))))"
                 },
                 withDirectionAndDistance: {
-                    withoutAttribute: "verify(that(is({0}, at({1}, spaces({2})))))",
-                    withAttribute: "verify(that(is({0}({1}), at({2}, spaces({3})))))",
-                    withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}, spaces({4})))))"
+                    withoutAttribute: "verify(that(is({0}, at({1}, steps({2})))))",
+                    withAttribute: "verify(that(is({0}({1}), at({2}, steps({3})))))",
+                    withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}, steps({4})))))"
                 }
 
             }
@@ -1298,11 +1298,13 @@ var robot = (function (world) {
                     withoutAttribute: [
                         {
                             text: "face away from the {0}",
+                            south: true,
                             fragment: false,
                             relationalOnly: false
                         },
                         {
                             text: "turn away from the {0}",
+                            south: true,
                             fragment: false,
                             relationalOnly: false
                         },
@@ -1321,11 +1323,13 @@ var robot = (function (world) {
                         {
                             text: "face away from the {0} {1}",
                             fragment: false,
+                            south: true,
                             relationalOnly: false
                         },
                         {
                             text: "turn away from the {0} {1}",
                             fragment: false,
+                            south: true,
                             relationalOnly: false
                         },
                         {
@@ -1343,11 +1347,13 @@ var robot = (function (world) {
                         {
                             text: "face away from the {0} with {1} {2}",
                             fragment: false,
+                            south: true,
                             relationalOnly: false
                         },
                         {
                             text: "turn away from the {0} with {1} {2}",
                             fragment: false,
+                            south: true,
                             relationalOnly: false
                         },
                         {
@@ -1365,9 +1371,9 @@ var robot = (function (world) {
             },
             move: {
                 unconditional: [
-                    "move {0} spaces",
-                    "walk {0} spaces",
-                    "go {0} spaces"
+                    "move {0} steps",
+                    "walk {0} steps",
+                    "go {0} steps"
                 ],
                 conditional: {
                     withoutDirection: {
@@ -1608,19 +1614,19 @@ var robot = (function (world) {
                 },
                 withDirectionAndDistance: {
                     withoutAttribute: [
-                        "you should {0} spaces away from a {1} on the {2}",
-                        "you should {0} spaces away from a {1} on your {2}",
-                        "you should {0} spaces away from a {1} to your {2}"
+                        "you should {0} steps away from a {1} on the {2}",
+                        "you should {0} steps away from a {1} on your {2}",
+                        "you should {0} steps away from a {1} to your {2}"
                     ],
                     withAttribute: [
-                        "you should {0} spaces away from a {1} {2} on the {3}",
-                        "you should {0} spaces away from a {1} {2} on your {3}",
-                        "you should {0} spaces away from a {1} {2} to your {3}"
+                        "you should {0} steps away from a {1} {2} on the {3}",
+                        "you should {0} steps away from a {1} {2} on your {3}",
+                        "you should {0} steps away from a {1} {2} to your {3}"
                     ],
                     withNestedAttribute: [
-                        "you should {0} spaces away from a {1} with {2} {3} on the {4}",
-                        "you should {0} spaces away from a {1} with {2} {3} on your {4}",
-                        "you should {0} spaces away from a {1} with {2} {3} to your {4}"
+                        "you should {0} steps away from a {1} with {2} {3} on the {4}",
+                        "you should {0} steps away from a {1} with {2} {3} on your {4}",
+                        "you should {0} steps away from a {1} with {2} {3} to your {4}"
                     ]
                 }
             }
@@ -1656,7 +1662,7 @@ var robot = (function (world) {
                 sentences.push(turnSentence.text.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
 
                 if(turnSentence.fragment) {
-                    sentences.push("and");
+                    sentences.push(", ");
                 }
             } else {
                 var turnReference = source.turnSource.reference;
@@ -1673,15 +1679,31 @@ var robot = (function (world) {
                 direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
                 if(turnReference.attribute === null) {
                     sentences.push(turnSentence.text.interpolate(turnReference.name, direction));
+
+                    if(/^[aeiou]/.test(turnReference.name)) {
+                        sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                    }
                 } else if(typeof turnReference.attribute === "string") {
-                    sentences.push(turnSentence.text.interpolate(turnReference.name, turnReference.attribute, direction));
+                    sentences.push(turnSentence.text.interpolate(turnReference.attribute, turnReference.name, direction));
+
+                    if(/^[aeiou]/.test(turnReference.attribute)) {
+                        sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                    }
                 } else {
-                    sentences.push(turnSentence.text.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute, direction));
+                    sentences.push(turnSentence.text.interpolate(turnReference.name, turnReference.attribute.attribute, turnReference.attribute.name, direction));
+
+                    if(/^[aeiou]/.test(turnReference.name)) {
+                        sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                    }
                 }
             }
 
             if(destination.moveDestination.type === "unconditional") {
                 sentences.push(templates.move.unconditional[Math.floor(Math.random() * templates.move.unconditional.length)].interpolate(comparison.distance));
+
+                if(comparison.distance === 1) {
+                    sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/steps/, "step");
+                }
             } else {
                 var moveReference = destination.moveDestination.reference;
                 var moveSentences;
@@ -1690,24 +1712,48 @@ var robot = (function (world) {
                     if(moveReference.attribute === null) {
                         moveSentences = templates.move.conditional.withoutDirection.withoutAttribute;
                         sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name));
+
+                        if(/^[aeiou]/.test(moveReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else if(typeof moveReference.attribute === "string") {
                         moveSentences = templates.move.conditional.withoutDirection.withAttribute;
-                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute));
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.attribute, moveReference.name));
+
+                        if(/^[aeiou]/.test(moveReference.attribute)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else {
                         moveSentences = templates.move.conditional.withoutDirection.withNestedAttribute;
-                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute));
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.attribute, moveReference.attribute.name));
+
+                        if(/^[aeiou]/.test(moveReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     }
                 } else {
                     direction = destination.moveDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][moveReference.direction] : moveReference.direction;
                     if(moveReference.attribute === null) {
                         moveSentences = templates.move.conditional.withDirection.withoutAttribute;
                         sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, direction));
+
+                        if(/^[aeiou]/.test(moveReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else if(typeof moveReference.attribute === "string") {
                         moveSentences = templates.move.conditional.withDirection.withAttribute;
-                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute, direction));
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.attribute, moveReference.name, direction));
+
+                        if(/^[aeiou]/.test(moveReference.attribute)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else {
                         moveSentences = templates.move.conditional.withDirection.withNestedAttribute;
-                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute, direction));
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.attribute, moveReference.attribute.name, direction));
+
+                        if(/^[aeiou]/.test(moveReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     }
                 }
             }
@@ -1719,37 +1765,77 @@ var robot = (function (world) {
                 if(typeof verifyReference.direction === "undefined" && typeof verifyReference.distance === "undefined") {
                     if(verifyReference.attribute === null) {
                         verifySentences = templates.verify.withoutDirectionAndDistance.withoutAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else if(typeof verifyReference.attribute === "string") {
                         verifySentences = templates.verify.withoutDirectionAndDistance.withAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.attribute, verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.attribute)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else {
                         verifySentences = templates.verify.withoutDirectionAndDistance.withNestedAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.attribute, verifyReference.attribute.name, direction, verifyReference.distance));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     }
                 } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance === "undefined") {
                     direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
                     if(verifyReference.attribute === null) {
                         verifySentences = templates.verify.withDirection.withoutAttribute;
                         sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else if(typeof verifyReference.attribute === "string") {
                         verifySentences = templates.verify.withDirection.withAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.attribute, verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.attribute)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else {
                         verifySentences = templates.verify.withDirection.withNestedAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.attribute, verifyReference.attribute.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     }
                 } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance !== "undefined") {
                     direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
                     if(verifyReference.attribute === null) {
                         verifySentences = templates.verify.withDirectionAndDistance.withoutAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.distance, verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else if(typeof verifyReference.attribute === "string") {
                         verifySentences = templates.verify.withDirectionAndDistance.withAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.distance, verifyReference.attribute, verifyReference.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.attribute)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
                     } else {
                         verifySentences = templates.verify.withDirectionAndDistance.withNestedAttribute;
-                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.distance, verifyReference.name, verifyReference.attribute.attribute, verifyReference.attribute.name, direction));
+
+                        if(/^[aeiou]/.test(verifyReference.name)) {
+                            sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/ a /, " an ");
+                        }
+                    }
+
+                    if(verifyReference.distance === 1) {
+                        sentences[sentences.length - 1] = sentences[sentences.length - 1].replace(/steps/, "step");
                     }
                 }
             }
