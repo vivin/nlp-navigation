@@ -1113,16 +1113,9 @@ var robot = (function (world) {
             turn: {
                 unconditional: "turn({0})",
                 conditional: {
-                    withoutDirection: {
-                        withoutAttribute: "turn(until(is({0})))",
-                        withAttribute: "turn(until(is({0}({1}))))",
-                        withNestedAttribute: "turn(until(is({0}({1}({2})))))"
-                    },
-                    withDirection: {
-                        withoutAttribute: "turn(until(is({0}, at({1}))))",
-                        withAttribute: "turn(until(is({0}({1}), at({2}))))",
-                        withNestedAttribute: "turn(until(is({0}({1}({2})), at({3}))))"
-                    }
+                    withoutAttribute: "turn(until(is({0}, at({1}))))",
+                    withAttribute: "turn(until(is({0}({1}), at({2}))))",
+                    withNestedAttribute: "turn(until(is({0}({1}({2})), at({3}))))"
                 }
             },
             move: {
@@ -1141,9 +1134,22 @@ var robot = (function (world) {
                 }
             },
             verify: {
-                withoutAttribute: "verify(that(is({0}, at({1}, spaces({2})))))",
-                withAttribute: "verify(that(is({0}({1}), at({2}, spaces({3})))))",
-                withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}, spaces({4})))))"
+                withoutDirectionAndDistance: {
+                    withoutAttribute: "verify(that(is({0})))",
+                    withAttribute: "verify(that(is({0}({1}))))",
+                    withNestedAttribute: "verify(that(is({0}({1}({2})))))"
+                },
+                withDirection: {
+                    withoutAttribute: "verify(that(is({0}, at({1}))))",
+                    withAttribute: "verify(that(is({0}({1})m at({2}))))",
+                    withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}))))"
+                },
+                withDirectionAndDistance: {
+                    withoutAttribute: "verify(that(is({0}, at({1}, spaces({2})))))",
+                    withAttribute: "verify(that(is({0}({1}), at({2}, spaces({3})))))",
+                    withNestedAttribute: "verify(that(is({0}({1}({2})), at({3}, spaces({4})))))"
+                }
+
             }
         };
 
@@ -1170,24 +1176,15 @@ var robot = (function (world) {
                 instructions.push(templates.turn.unconditional.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
             } else {
                 var turnReference = source.turnSource.reference;
+                console.log(orientation, sourceLocation.toString(), destinationLocation.toString());
 
-                if(typeof turnReference.direction === "undefined" ) {
-                    if(turnReference.attribute === null) {
-                        instructions.push(templates.turn.conditional.withoutDirection.withoutAttribute.interpolate(turnReference.name));
-                    } else if(typeof turnReference.attribute === "string") {
-                        instructions.push(templates.turn.conditional.withoutDirection.withAttribute.interpolate(turnReference.name, turnReference.attribute));
-                    } else {
-                        instructions.push(templates.turn.conditional.withoutDirection.withNestedAttribute.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute));
-                    }
+                direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
+                if(turnReference.attribute === null) {
+                    instructions.push(templates.turn.conditional.withoutAttribute.interpolate(turnReference.name, direction));
+                } else if(typeof turnReference.attribute === "string") {
+                    instructions.push(templates.turn.conditional.withAttribute.interpolate(turnReference.name, turnReference.attribute, direction));
                 } else {
-                    direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
-                    if(turnReference.attribute === null) {
-                        instructions.push(templates.turn.conditional.withDirection.withoutAttribute.interpolate(turnReference.name, direction));
-                    } else if(typeof turnReference.attribute === "string") {
-                        instructions.push(templates.turn.conditional.withDirection.withAttribute.interpolate(turnReference.name, turnReference.attribute, direction));
-                    } else {
-                        instructions.push(templates.turn.conditional.withDirection.withNestedAttribute.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute, direction));
-                    }
+                    instructions.push(templates.turn.conditional.withNestedAttribute.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute, direction));
                 }
             }
 
@@ -1219,18 +1216,546 @@ var robot = (function (world) {
             if(i === paths.length - 2) {
                 var verifyReference = destination.verifyDestination.reference;
 
-                direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
-                if(verifyReference.attribute === null) {
-                    instructions.push(templates.verify.withoutAttribute.interpolate(verifyReference.name, direction, verifyReference.distance));
-                } else if(typeof verifyReference.attribute === "string") {
-                    instructions.push(templates.verify.withAttribute.interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
-                } else {
-                    instructions.push(templates.verify.withNestedAttribute.interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                if(typeof verifyReference.direction === "undefined" && typeof verifyReference.distance === "undefined") {
+                    if(verifyReference.attribute === null) {
+                        instructions.push(templates.verify.withoutDirectionAndDistance.withoutAttribute.interpolate(verifyReference.name, direction, verifyReference.distance));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        instructions.push(templates.verify.withoutDirectionAndDistance.withAttribute.interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                    } else {
+                        instructions.push(templates.verify.withoutDirectionAndDistance.withNestedAttribute.interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                    }
+                } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance === "undefined") {
+                    direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
+                    if(verifyReference.attribute === null) {
+                        instructions.push(templates.verify.withDirection.withoutAttribute.interpolate(verifyReference.name, direction));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        instructions.push(templates.verify.withDirection.withAttribute.interpolate(verifyReference.name, verifyReference.attribute, direction));
+                    } else {
+                        instructions.push(templates.verify.withDirection.withNestedAttribute.interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction));
+                    }
+                } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance !== "undefined") {
+                    direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
+                    if(verifyReference.attribute === null) {
+                        instructions.push(templates.verify.withDirectionAndDistance.withoutAttribute.interpolate(verifyReference.distance, direction, verifyReference.name));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        instructions.push(templates.verify.withDirectionAndDistance.withAttribute.interpolate(verifyReference.distance, direction, verifyReference.name, verifyReference.attribute));
+                    } else {
+                        instructions.push(templates.verify.withDirectionAndDistance.withNestedAttribute.interpolate(direction, verifyReference.distance, verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute));
+                    }
                 }
             }
         }
 
         return instructions;
+    }
+
+    function generateEnglish(paths) {
+        var templates = {
+            turn: {
+                unconditional: [
+                    {
+                        text: "face {0}",
+                        fragment: false,
+                        relationalOnly: false
+                    },
+                    {
+                        text: "turn {0}",
+                        fragment: false,
+                        relationalOnly: false
+                    },
+                    {
+                        text: "facing {0}",
+                        fragment: true,
+                        relationalOnly: false
+                    },
+                    {
+                        text: "turn to the {0}",
+                        fragment: false,
+                        relationalOnly: false
+                    },
+                    {
+                        text: "face to the {0}",
+                        fragment: false,
+                        relationalOnly: false
+                    },
+                    {
+                        text: "take a {0}",
+                        fragment: false,
+                        relationalOnly: true
+                    },
+                    {
+                        text: "face to your {0}",
+                        fragment: false,
+                        relationalOnly: true
+                    },
+                    {
+                        text: "turn to your {0}",
+                        fragment: false,
+                        relationalOnly: true
+                    }
+                ],
+                conditional: {
+                    withoutAttribute: [
+                        {
+                            text: "face away from the {0}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "turn away from the {0}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "with the {0} on your {1}",
+                            fragment: true,
+                            relationalOnly: true
+                        },
+                        {
+                            text: "with the {0} on the {1}",
+                            fragment: true,
+                            relationalOnly: true
+                        }
+                    ],
+                    withAttribute: [
+                        {
+                            text: "face away from the {0} {1}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "turn away from the {0} {1}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "with the {0} {1} on your {2}",
+                            fragment: true,
+                            relationalOnly: true
+                        },
+                        {
+                            text: "with the {0} {1} on the {2}",
+                            fragment: true,
+                            relationalOnly: true
+                        }
+                    ],
+                    withNestedAttribute: [
+                        {
+                            text: "face away from the {0} with {1} {2}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "turn away from the {0} with {1} {2}",
+                            fragment: false,
+                            relationalOnly: false
+                        },
+                        {
+                            text: "with the {0} with {1} {2} on your {3}",
+                            fragment: true,
+                            relationalOnly: true
+                        },
+                        {
+                            text: "with the {0} with {1} {2} on the {3}",
+                            fragment: true,
+                            relationalOnly: true
+                        }
+                    ]
+                }
+            },
+            move: {
+                unconditional: [
+                    "move {0} spaces",
+                    "walk {0} spaces",
+                    "go {0} spaces"
+                ],
+                conditional: {
+                    withoutDirection: {
+                        withoutAttribute: [
+                            "walk until you are at the {0}",
+                            "go until you are at the {0}",
+                            "move until you are at the {0}",
+                            "walk until you are by the {0}",
+                            "go until you are by the {0}",
+                            "move until you are by the {0}",
+                            "walk until you see the {0}",
+                            "go until you see the {0}",
+                            "move until you see the {0}",
+                            "walk until you are at a {0}",
+                            "go until you are at a {0}",
+                            "move until you are at a {0}",
+                            "walk until you are by a {0}",
+                            "go until you are by a {0}",
+                            "move until you are by a {0}",
+                            "walk until you see a {0}",
+                            "go until you see a {0}",
+                            "move until you see a {0}"
+                        ],
+                        withAttribute: [
+                            "walk until you are at the {0} {1}",
+                            "go until you are at the {0} {1}",
+                            "move until you are at the {0} {1}",
+                            "walk until you are by the {0} {1}",
+                            "go until you are by the {0} {1}",
+                            "move until you are by the {0} {1}",
+                            "walk until you see the {0} {1}",
+                            "go until you see the {0} {1}",
+                            "move until you see the {0} {1}",
+                            "walk until you are at a {0} {1}",
+                            "go until you are at a {0} {1}",
+                            "move until you are at a {0} {1}",
+                            "walk until you are by a {0} {1}",
+                            "go until you are by a {0} {1}",
+                            "move until you are by a {0} {1}",
+                            "walk until you see a {0} {1}",
+                            "go until you see a {0} {1}",
+                            "move until you see a {0} {1}"
+                        ],
+                        withNestedAttribute: [
+                            "walk until you are at the {0} with {1} {2}",
+                            "go until you are at the {0} with {1} {2}",
+                            "move until you are at the {0} with {1} {2}",
+                            "walk until you are by the {0} with {1} {2}",
+                            "go until you are by the {0} with {1} {2}",
+                            "move until you are by the {0} with {1} {2}",
+                            "walk until you see the {0} with {1} {2}",
+                            "go until you see the {0} with {1} {2}",
+                            "move until you see the {0} with {1} {2}",
+                            "walk until you are at a {0} with {1} {2}",
+                            "go until you are at a {0} with {1} {2}",
+                            "move until you are at a {0} with {1} {2}",
+                            "walk until you are by a {0} with {1} {2}",
+                            "go until you are by a {0} with {1} {2}",
+                            "move until you are by a {0} with {1} {2}",
+                            "walk until you see a {0} with {1} {2}",
+                            "go until you see a {0} with {1} {2}",
+                            "move until you see a {0} with {1} {2}"
+                        ]
+                    },
+                    withDirection: {
+                        withoutAttribute: [
+                            "walk until you are in front of the {0}",
+                            "go until you are in front of the {0}",
+                            "move until you are in front of the {0}",
+                            "walk until the {0} is at the {1}",
+                            "go until the {0} is at the {1}",
+                            "move until the {0} is at the {1}",
+                            "walk until the {0} is at your {1}",
+                            "go until the {0} is at your {1}",
+                            "move until the {0} is at your {1}",
+                            "walk until the {0} is to the {1}",
+                            "go until the {0} is to the {1}",
+                            "move until the {0} is to the {1}",
+                            "walk until the {0} is to your {1}",
+                            "go until the {0} is to your {1}",
+                            "move until the {0} is to your {1}",
+                            "walk until the {0} is to the {1} of you",
+                            "go until the {0} is to the {1} of you",
+                            "move until the {0} is to the {1} of you",
+                            "walk until you are in front of a {0}",
+                            "go until you are in front of a {0}",
+                            "move until you are in front of a {0}",
+                            "walk until a {0} is at the {1}",
+                            "go until a {0} is at the {1}",
+                            "move until a {0} is at the {1}",
+                            "walk until a {0} is at your {1}",
+                            "go until a {0} is at your {1}",
+                            "move until a {0} is at your {1}",
+                            "walk until a {0} is to the {1}",
+                            "go until a {0} is to the {1}",
+                            "move until a {0} is to the {1}",
+                            "walk until a {0} is to your {1}",
+                            "go until a {0} is to your {1}",
+                            "move until a {0} is to your {1}",
+                            "walk until a {0} is to the {1} of you",
+                            "go until a {0} is to the {1} of you",
+                            "move until a {0} is to the {1} of you"
+                        ],
+                        withAttribute: [
+                            "walk until you are in front of the {0} {1}",
+                            "go until you are in front of the {0} {1}",
+                            "move until you are in front of the {0} {1}",
+                            "walk until the {0} {1} is at the {2}",
+                            "go until the {0} {1} is at the {2}",
+                            "move until the {0} {1} is at the {2}",
+                            "walk until the {0} {1} is at your {2}",
+                            "go until the {0} {1} is at your {2}",
+                            "move until the {0} {1} is at your {2}",
+                            "walk until the {0} {1} is to the {2}",
+                            "go until the {0} {1} is to the {2}",
+                            "move until the {0} {1} is to the {2}",
+                            "walk until the {0} {1} is to your {2}",
+                            "go until the {0} {1} is to your {2}",
+                            "move until the {0} {1} is to your {2}",
+                            "walk until the {0} {1} is to the {2} of you",
+                            "go until the {0} {1} is to the {2} of you",
+                            "move until the {0} {1} is to the {2} of you",
+                            "walk until you are in front of a {0} {1}",
+                            "go until you are in front of a {0} {1}",
+                            "move until you are in front of a {0} {1}",
+                            "walk until a {0} {1} is at the {2}",
+                            "go until a {0} {1} is at the {2}",
+                            "move until a {0} {1} is at the {2}",
+                            "walk until a {0} {1} is at your {2}",
+                            "go until a {0} {1} is at your {2}",
+                            "move until a {0} {1} is at your {2}",
+                            "walk until a {0} {1} is to the {2}",
+                            "go until a {0} {1} is to the {2}",
+                            "move until a {0} {1} is to the {2}",
+                            "walk until a {0} {1} is to your {2}",
+                            "go until a {0} {1} is to your {2}",
+                            "move until a {0} {1} is to your {2}",
+                            "walk until a {0} {1} is to the {2} of you",
+                            "go until a {0} {1} is to the {2} of you",
+                            "move until a {0} {1} is to the {2} of you"
+                        ],
+                        withNestedAttribute: [
+                            "walk until you are in front of the {0} with {1} {2}",
+                            "go until you are in front of the {0} with {1} {2}",
+                            "move until you are in front of the {0} with {1} {2}",
+                            "walk until the {0} with {1} {2} is at the {3}",
+                            "go until the {0} with {1} {2} is at the {3}",
+                            "move until the {0} with {1} {2} is at the {3}",
+                            "walk until the {0} with {1} {2} is at your {3}",
+                            "go until the {0} with {1} {2} is at your {3}",
+                            "move until the {0} with {1} {2} is at your {3}",
+                            "walk until the {0} with {1} {2} is to the {3}",
+                            "go until the {0} with {1} {2} is to the {3}",
+                            "move until the {0} with {1} {2} is to the {3}",
+                            "walk until the {0} with {1} {2} is to your {3}",
+                            "go until the {0} with {1} {2} is to your {3}",
+                            "move until the {0} with {1} {2} is to your {3}",
+                            "walk until the {0} with {1} {2} is to the {3} of you",
+                            "go until the {0} with {1} {2} is to the {3} of you",
+                            "move until the {0} with {1} {2} is to the {3} of you",
+                            "walk until you are in front of a {0} with {1} {2}",
+                            "go until you are in front of a {0} with {1} {2}",
+                            "move until you are in front of a {0} with {1} {2}",
+                            "walk until a {0} with {1} {2} is at the {3}",
+                            "go until a {0} with {1} {2} is at the {3}",
+                            "move until a {0} with {1} {2} is at the {3}",
+                            "walk until a {0} with {1} {2} is at your {3}",
+                            "go until a {0} with {1} {2} is at your {3}",
+                            "move until a {0} with {1} {2} is at your {3}",
+                            "walk until a {0} with {1} {2} is to the {3}",
+                            "go until a {0} with {1} {2} is to the {3}",
+                            "move until a {0} with {1} {2} is to the {3}",
+                            "walk until a {0} with {1} {2} is to your {3}",
+                            "go until a {0} with {1} {2} is to your {3}",
+                            "move until a {0} with {1} {2} is to your {3}",
+                            "walk until a {0} with {1} {2} is to the {3} of you",
+                            "go until a {0} with {1} {2} is to the {3} of you",
+                            "move until a {0} with {1} {2} is to the {3} of you"
+                        ]
+                    }
+                }
+            },
+            verify: {
+                withoutDirectionAndDistance: {
+                    withoutAttribute: [
+                        "you should be by a {0}",
+                        "you should be at a {0}",
+                        "you should be by the {0}",
+                        "you should be at the {0}",
+                        "you should see a {0}",
+                        "you should see the {0}",
+                        "there should be a {0}"
+                    ],
+                    withAttribute: [
+                        "you should be by a {0} {1}",
+                        "you should be at a {0} {1}",
+                        "you should be by the {0} {1}",
+                        "you should be at the {0} {1}",
+                        "you should see a {0} {1}",
+                        "you should see the {0} {1}",
+                        "there should be a {0} {1}"
+                    ],
+                    withNestedAttribute: [
+                        "you should be by a {0} with {1} {2}",
+                        "you should be at a {0} with {1} {2}",
+                        "you should be by the {0} with {1} {2}",
+                        "you should be at the {0} with {1} {2}",
+                        "you should see a {0} with {1} {2}",
+                        "you should see the {0} with {1} {2}",
+                        "there should be a {0} with {1} {2}"
+                    ]
+                },
+                withDirection: {
+                    withoutAttribute: [
+                        "you should be in front of a {0}",
+                        "there should be a {0} at the {1}",
+                        "there should be a {0} at your {1}",
+                        "there should be a {0} to the {1}",
+                        "there should be a {0} to your {1}",
+                        "there should be a {0} to the {1} of you"
+                    ],
+                    withAttribute: [
+                        "you should be in front of a {0} {1}",
+                        "there should be a {0} {1} at the {2}",
+                        "there should be a {0} {1} at your {2}",
+                        "there should be a {0} {1} to the {2}",
+                        "there should be a {0} {1} to your {2}",
+                        "there should be a {0} {1} to the {2} of you"
+                    ],
+                    withNestedAttribute: [
+                        "you should be in front of a {0} with {1} {2}",
+                        "there should be a {0} with {1} {2} at the {3}",
+                        "there should be a {0} with {1} {2} at your {3}",
+                        "there should be a {0} with {1} {2} to the {3}",
+                        "there should be a {0} with {1} {2} to your {3}",
+                        "there should be a {0} with {1} {2} to the {3} of you"
+                    ]
+                },
+                withDirectionAndDistance: {
+                    withoutAttribute: [
+                        "you should {0} spaces away from a {1} on the {2}",
+                        "you should {0} spaces away from a {1} on your {2}",
+                        "you should {0} spaces away from a {1} to your {2}"
+                    ],
+                    withAttribute: [
+                        "you should {0} spaces away from a {1} {2} on the {3}",
+                        "you should {0} spaces away from a {1} {2} on your {3}",
+                        "you should {0} spaces away from a {1} {2} to your {3}"
+                    ],
+                    withNestedAttribute: [
+                        "you should {0} spaces away from a {1} with {2} {3} on the {4}",
+                        "you should {0} spaces away from a {1} with {2} {3} on your {4}",
+                        "you should {0} spaces away from a {1} with {2} {3} to your {4}"
+                    ]
+                }
+            }
+        };
+
+         var sentences = [];
+        var orientation = locations.absolute.north;
+        for(var i = 0; i < paths.length - 1; i++) {
+
+            var source = paths[i];
+            var sourceLocation = locations.create(source.location.row, source.location.column);
+
+            var destination = paths[i + 1];
+            var destinationLocation = locations.create(destination.location.row, destination.location.column);
+
+            var comparison = sourceLocation.compare(destinationLocation, orientation);
+            orientation = comparison.absolute;
+
+            var turnSentences;
+            var turnSentence;
+            var direction;
+
+            if(source.turnSource.type === "unconditional") {
+                if(!source.turnSource.useRelativeDirection) {
+                    turnSentences = templates.turn.unconditional.filter(function(sentence) {
+                        return !sentence.relationalOnly;
+                    });
+                } else {
+                    turnSentences = templates.turn.unconditional;
+                }
+
+                turnSentence = turnSentences[Math.floor(Math.random() * turnSentences.length)];
+                sentences.push(turnSentence.text.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
+
+                if(turnSentence.fragment) {
+                    sentences.push("and");
+                }
+            } else {
+                var turnReference = source.turnSource.reference;
+                var attribute = turnReference.attribute === null ? "withoutAttribute" : typeof turnReference.attribute === "string" ? "withAttribute" : "withNestedAttribute";
+                if(!source.turnSource.useRelativeDirection) {
+                    turnSentences = templates.turn.conditional[attribute].filter(function(sentence) {
+                        return !sentence.relationalOnly;
+                    });
+                } else {
+                    turnSentences = templates.turn.conditional[attribute];
+                }
+
+                turnSentence = turnSentences[Math.floor(Math.random() * turnSentences.length)];
+                direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
+                if(turnReference.attribute === null) {
+                    sentences.push(turnSentence.text.interpolate(turnReference.name, direction));
+                } else if(typeof turnReference.attribute === "string") {
+                    sentences.push(turnSentence.text.interpolate(turnReference.name, turnReference.attribute, direction));
+                } else {
+                    sentences.push(turnSentence.text.interpolate(turnReference.name, turnReference.attribute.name, turnReference.attribute.attribute, direction));
+                }
+            }
+
+            if(destination.moveDestination.type === "unconditional") {
+                sentences.push(templates.move.unconditional[Math.floor(Math.random() * templates.move.unconditional.length)].interpolate(comparison.distance));
+            } else {
+                var moveReference = destination.moveDestination.reference;
+                var moveSentences;
+
+                if(typeof moveReference.direction === "undefined" ) {
+                    if(moveReference.attribute === null) {
+                        moveSentences = templates.move.conditional.withoutDirection.withoutAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name));
+                    } else if(typeof moveReference.attribute === "string") {
+                        moveSentences = templates.move.conditional.withoutDirection.withAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute));
+                    } else {
+                        moveSentences = templates.move.conditional.withoutDirection.withNestedAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute));
+                    }
+                } else {
+                    direction = destination.moveDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][moveReference.direction] : moveReference.direction;
+                    if(moveReference.attribute === null) {
+                        moveSentences = templates.move.conditional.withDirection.withoutAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, direction));
+                    } else if(typeof moveReference.attribute === "string") {
+                        moveSentences = templates.move.conditional.withDirection.withAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute, direction));
+                    } else {
+                        moveSentences = templates.move.conditional.withDirection.withNestedAttribute;
+                        sentences.push(moveSentences[Math.floor(Math.random() * moveSentences.length)].interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute, direction));
+                    }
+                }
+            }
+
+            if(i === paths.length - 2) {
+                var verifyReference = destination.verifyDestination.reference;
+                var verifySentences;
+
+                if(typeof verifyReference.direction === "undefined" && typeof verifyReference.distance === "undefined") {
+                    if(verifyReference.attribute === null) {
+                        verifySentences = templates.verify.withoutDirectionAndDistance.withoutAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction, verifyReference.distance));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        verifySentences = templates.verify.withoutDirectionAndDistance.withAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                    } else {
+                        verifySentences = templates.verify.withoutDirectionAndDistance.withNestedAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                    }
+                } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance === "undefined") {
+                    direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
+                    if(verifyReference.attribute === null) {
+                        verifySentences = templates.verify.withDirection.withoutAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        verifySentences = templates.verify.withDirection.withAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction));
+                    } else {
+                        verifySentences = templates.verify.withDirection.withNestedAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction));
+                    }
+                } else if(typeof verifyReference.direction !== "undefined" && typeof verifyReference.distance !== "undefined") {
+                    direction = destination.verifyDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][verifyReference.direction] : verifyReference.direction;
+                    if(verifyReference.attribute === null) {
+                        verifySentences = templates.verify.withDirectionAndDistance.withoutAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, direction, verifyReference.distance));
+                    } else if(typeof verifyReference.attribute === "string") {
+                        verifySentences = templates.verify.withDirectionAndDistance.withAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute, direction, verifyReference.distance));
+                    } else {
+                        verifySentences = templates.verify.withDirectionAndDistance.withNestedAttribute;
+                        sentences.push(verifySentences[Math.floor(Math.random() * verifySentences.length)].interpolate(verifyReference.name, verifyReference.attribute.name, verifyReference.attribute.attribute, direction, verifyReference.distance));
+                    }
+                }
+            }
+        }
+
+        return sentences;
     }
 
     function generatePath() {
@@ -1309,12 +1834,25 @@ var robot = (function (world) {
             var references = scanData.immediate.objects.filter(function (object) {
                 return object.name !== "wall";
             }).map(function (object) {
-                return {
-                    name: object.name,
-                    attribute: object.attribute,
-                    direction: object.position.absolute,
-                    distance: 1
-                };
+                if(Math.floor(Math.random() * 3) === 2) {
+                    return {
+                        name: object.name,
+                        attribute: object.attribute
+                    };
+                } else if(Math.floor(Math.random() * 3) === 2) {
+                    return {
+                        name: object.name,
+                        attribute: object.attribute,
+                        direction: object.position.value
+                    };
+                } else {
+                    return {
+                        name: object.name,
+                        attribute: object.attribute,
+                        direction: object.position.absolute,
+                        distance: 1
+                    };
+                }
             }).concat(Object.keys(scanData.lineOfSight).filter(function (direction) {
                 return locations.oppositeAbsolute[direction] !== currentOrientation;
             }).reduce(function (references, direction) {
@@ -1537,8 +2075,10 @@ var robot = (function (world) {
         },
         parse: parser.parse,
         generatePath: generatePath,
-        generateFormal: function() {
-            return generateFormal(generatePath());
+        generate: function() {
+            var path = generatePath();
+            console.log(generateFormal(path));
+            console.log(generateEnglish(path));
         }
     };
 
