@@ -14,6 +14,7 @@ door	N	#x.door(x)
 east	N	east
 east	NP	east
 face	S/NP	#x.turn(x)
+facing	S/NP	#x.turn(x)
 from	(NP\NP)/NP	#x.#y.until(is(x,y))
 from	((S\NP)\(S\NP))/NP	#x.x
 front	NP	front
@@ -57,11 +58,14 @@ the	(NP/NP)/N	#x.x
 the	(NP/NP)/N	#x.#y.y @ x
 the	NP/N	#x.at(x)
 the	NP/N	#x.x
+the	NP	#x.x
 there	NP	#x.verify(x)
 to	(NP\NP)/NP	#x.at(x)
+to	(NP/NP)/NP	#x.x
 to	(NP\NP)/NP	#x.#y.y @ at(x)
 to	(NP\NP)/NP	#x.#y.y @ x
 to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
+turn	S/NP	#x.turn(x)
 until	NP/NP	#x.until(x)
 until	NP/NP	#x.#y.x @ until(y)
 walk	(S\NP)/NP	#x.#y.move(x @ y)

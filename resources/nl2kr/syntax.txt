@@ -28,6 +28,7 @@ you	NP/NP
 the	(NP/NP)/N
 from	(NP\NP)/NP
 face	S/NP
+facing	S/NP
 go	S/NP
 move	S/NP
 turn	S/NP
