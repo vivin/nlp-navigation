@@ -1,1 +1,1 @@
-you should be to the north of a locked door	verify(that(is(door(locked), at(north))))
+there should be a potted plant to the left of you	verify(that(is(plant(potted), at(left))))

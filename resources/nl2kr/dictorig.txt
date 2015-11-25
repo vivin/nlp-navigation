@@ -3,18 +3,11 @@ an	NP/N	#x.x
 a	NP/N	#x.x
 are	NP/NP	#x.x
 are	NP	#x.x
-at	(NP\NP)/NP	#x.x
-at	(NP\NP)/NP	#x.#y.is(y,x)
-at	(NP\NP)/NP	#x.#y.y @ is(x)
-at	NP/NP	#x.at(x)
 away	NP	at(south)
 away	(S\NP)\(S\NP)	#x.x
 be	(S\NP)/NP	#x.is(x)
 be	(S\NP)/NP	#x.x
-be	S\NP	#x.x
 blue	N/N	#x.x @ blue
-by	((S\NP)\(S\NP))/NP	#x.#y.y @ is(x)
-by	((S\NP)\(S\NP))/NP	#x.#y.y @ #z.z @ is(x)
 carpet	N	#x.carpet(x)
 door	NP	#x.door(x)
 door	N	#x.door(x)
@@ -24,6 +17,7 @@ face	S/NP	#x.turn(x)
 facing	S/NP	#x.turn(x)
 from	(NP\NP)/NP	#x.#y.until(is(x,y))
 from	((S\NP)\(S\NP))/NP	#x.x
+front	NP	front
 front	NP	front
 glass	N/N	#x.x @ glass
 go	S/NP	#x.move(x)
@@ -37,20 +31,14 @@ is	N	#x.#y.is(x,y)
 is	N	#x.#y.is(y,x)
 lamp	N	lamp
 left	N	left
-left	NP	left
-locked	N/N	#x.x @ locked
 main	N/N	#x.x @ main
-modern	N/N	#x.x @ modern
 move	S/NP	#x.move(x)
 north	N	north
 north	NP	north
-now	(S\NP)/(S\NP)	#x.x
 of	(NP\NP)/NP	#x.x
 of	(NP\NP)/NP	#x.#y.is(x,at(y))
-of	(NP\NP)/NP	#x.#y.#z.z @ is(x,at(y))
 old	N/N	#x.x @ old
 on	(NP\NP)/NP	#x.at(x)
-on	(NP\NP)/NP	#x.#y.turn(until(is(y,x)))
 on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
 open	N/N	#x.x @ open
 painting	NP	#x.painting(x)
@@ -61,8 +49,6 @@ red	N/N	#x.x @ red
 right	N	right
 see	(S\NP)/NP	#x.x
 see	(S\(S\NP))/NP	#x.#y.y @ is(x)
-should	(S\NP)/(S\NP)	#x.x
-should	(S\NP)/(S\NP)	#x.x @ #y.#z.z @ that(y)
 should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
 south	NP	south
 south	N	south
@@ -78,12 +64,9 @@ to	(NP\NP)/NP	#x.at(x)
 to	(NP/NP)/NP	#x.x
 to	(NP\NP)/NP	#x.#y.y @ at(x)
 to	(NP\NP)/NP	#x.#y.y @ x
-to	((S\NP)\(S\NP))/NP	#x.#y.is(y,x)
 to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
-to	((S\NP)\(S\NP))/NP	#x.#y.#z.z @ that(is(y,x))
 turn	S/NP	#x.turn(x)
 until	NP/NP	#x.until(x)
-until	NP/NP	#x.x @ #y.until(y)
 until	NP/NP	#x.#y.x @ until(y)
 walk	(S\NP)/NP	#x.#y.move(x @ y)
 walk	S/NP	#x.move(x)
@@ -93,13 +76,82 @@ wall	N	#x.wall(x)
 west	NP	west
 west	N	west
 with	((N/N)/(N/N))\(S\NP)	#x.x
+with	NP/NP	#x.x
+you	NP/NP	#x.is(x)
+you	NP/NP	#x.x
+you	NP	#x.verify(x)
+you	NP	#x.x
+your	NP/N	#x.x
+
+
+
+
+
+
+
+
+
+
+2	NP/N	#x.x @ 2
+a	NP/N	#x.x
+are	NP	#x.x
+at	(NP\NP)/NP	#x.x
+at	(NP\NP)/NP	#x.#y.is(y,x)
+at	(NP\NP)/NP	#x.#y.y @ is(x)
+at	(NP\NP)/NP	#x.#y.#z.#v.v @ is(z @ y,at(x))
+at	NP/NP	#x.at(x)
+away	(S\NP)\(S\NP)	#x.x
+be	(S\NP)/NP	#x.x
+be	(S\NP)/NP	#x.#y.is(x,y)
+carpet	N/N	#x.x @ #y.carpet(y)
+carpet	N	#x.carpet(x)
+east	NP	east
+from	((S\NP)\(S\NP))/NP	#x.x
+from	((S\NP)\(S\NP))/NP	#x.#y.#z.z @ that(x @ y)
+hall	N	#x9.hall(x9)
+is	N	#x.x
+is	(S\S)/NP	#x.#y.y @ x
+left	N	left
+modern	N/N	#x.x @ modern
+now	(S\NP)/(S\NP)	#x.x
+of	(NP\NP)/NP	#x.x
+of	(NP\NP)/NP	#x.#y.is(x,at(y))
+on	(NP\NP)/NP	#x.#y.turn(until(is(y,x)))
+on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
+on	(NP\NP)/NP	#x.#y.#z.#v.is(z @ y,x @ v)
+on	(NP\NP)/NP	#x.#y.#z.#v.v @ that(is(y,at(x,z)))
+painting	N	#x.painting(x)
+red	N/N	#x.x @ red
+right	N	right
+should	(S\NP)/(S\NP)	#x.x
+should	(S\NP)/(S\NP)	#x.#y.y @ that(x)
+should	(S\NP)/(S\NP)	#x.#y.#z.z @ that(x @ y)
+spaces	N	#x.spaces(x)
+the	(NP/NP)/N	#x.x
+the	(NP/NP)/N	#x.#y.y @ x
+the	(NP/NP)/N	#x.#y.#z.z @ is(x @ y)
+the	NP/N	#x.at(x)
+the	NP/N	#x.x
+there	NP	#x.verify(x)
+to	(NP\NP)/NP	#x.#y.y @ x
+to	(NP\NP)/NP	#x.#y.#z.is(z @ y,at(x))
+to	(NP\NP)/NP	#x.#y.#z.is(z @ y,x)
+to	((S\NP)\(S\NP))/NP	#x.#y.is(y,x)
+to	((S\NP)\(S\NP))/NP	#x.#y.y @ x
+until	NP/NP	#x.until(x)
+until	NP/NP	#x.x @ #y.until(y)
+until	NP/NP	#x.#y.is(x,y)
+walk	S/NP	#x.move(x)
+walk	S/NP	#x.#y.move(until(x @ y))
+walk	S/NP	#x.#y.move(x @ y)
 with	(NP\NP)/NP	#x.x
 with	(NP\NP)/NP	#x.#y.y @ x
 with	NP/NP	#x.x
-yellow	N/N	#x.x @ yellow
-you	NP/NP	#x.is(x)
+xour	NP/N	#x.#z.at(x @ z)
 you	NP/NP	#x.x
 you	NP	#x.verify(x)
 you	NP	#x.x
 your	NP/N	#x.at(x)
 your	NP/N	#x.x
+your	NP/N	#x.#y.at(x,y)
+
