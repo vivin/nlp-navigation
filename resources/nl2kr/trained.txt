@@ -100,7 +100,7 @@ spaces	N	#x.spaces(x)	2.3025851
 steel	N/N	#x.x @ steel	-1.0
 away	(S\NP)\(S\NP)	#x.x	2.3025851
 away	(S\NP)\(S\NP)	l(x,x)	-1.0
-away	NP	at(south)	1.3862944
+away	NP	at(back)	1.3862944
 be	S\NP	l(x,x)	-1.0
 be	S\NP	#x366.x366	1.3862944
 be	(S\NP)/NP	#x.is(x)	1.0986123

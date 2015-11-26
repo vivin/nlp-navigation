@@ -2128,6 +2128,8 @@ var robot = (function (world) {
             dalek.style.top = rect.top + "px";
             dalek.style.left = rect.left + "px";
         }
+
+        return this;
     }
 
     function turn(direction) {
@@ -2154,6 +2156,7 @@ var robot = (function (world) {
         }
 
         dalek.style.transform = "rotate" + "(" + rotation + "deg)";
+        return this;
     }
 
     function move(distance) {
@@ -2169,6 +2172,8 @@ var robot = (function (world) {
                 throw new RangeError("Robot crashed into the wall :(");
             }
         }
+
+        return this;
     }
 
     return {
@@ -2334,6 +2339,75 @@ var simulation = (function () {
     return {
         simulate: simulate
     }
+})();
+
+var simulator = (function() {
+
+    var handlers = {
+        start: start,
+        turn: turn,
+        move: move,
+        verify: verify
+    };
+
+    function start(args) {
+        robot.start(args.row, args.column);
+    }
+
+    function turn(args) {
+        if(typeof args.direction !== "undefined") {
+            robot.turn(args.direction);
+        } else {
+            args.until.reduce(function(result, condition) {
+                var satisfied = false;
+                var i = 0;
+                while(i < 4 && !satisfied) {
+                    satisfied = robot.turn(locations.relative.right)
+                        .scan()
+                        .immediate
+                        .objects
+                        .reduce(function(matched, object) {
+                            var match = object.name === condition.object.name;
+
+                            var hasAttibute = typeof condition.object.attributes !== "undefined";
+                            if(hasAttibute && typeof condition.object.attributes[0] === "string") {
+                                match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
+                            } else if(hasAttibute && typeof condition.object.attributes[0] === "object") {
+                                match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
+                            }
+
+                            match = match && (object.position.relative === condition.orientation.direction);
+
+                            return matched || match;
+                    }, false);
+
+                    i++;
+                }
+
+                return satisfied && result;
+            }, true);
+        }
+    }
+
+    function move() {
+
+    }
+
+    function verify() {
+
+    }
+
+    function simulate(program) {
+        var instructions = parser.parse(program);
+        instructions.forEach(function(instruction) {
+            handlers[instruction.instruction].call(null, instruction.arguments);
+        });
+    }
+
+    return {
+        simulate: simulate
+    };
+
 })();
 
 window.onload = function () {

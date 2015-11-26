@@ -7,7 +7,7 @@ at	(NP\NP)/NP	#x.x
 at	(NP\NP)/NP	#x.#y.is(y,x)
 at	(NP\NP)/NP	#x.#y.y @ is(x)
 at	NP/NP	#x.at(x)
-away	NP	at(south)
+away	NP	at(back)
 away	(S\NP)\(S\NP)	#x.x
 be	(S\NP)/NP	#x.is(x)
 be	(S\NP)/NP	#x.x
