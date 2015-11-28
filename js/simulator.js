@@ -874,6 +874,8 @@ var world = (function () {
 
     function render() {
         var table = document.getElementById("world");
+        table.innerHTML = "";
+
         grid.forEach(function (objects) {
             var row = document.createElement("tr");
             objects.forEach(function (object) {
@@ -1176,8 +1178,6 @@ var robot = (function (world) {
                 instructions.push(templates.turn.unconditional.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
             } else {
                 var turnReference = source.turnSource.reference;
-                console.log(orientation, sourceLocation.toString(), destinationLocation.toString());
-
                 direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
                 if (turnReference.attribute === null) {
                     instructions.push(templates.turn.conditional.withoutAttribute.interpolate(turnReference.name, direction));
@@ -1672,7 +1672,6 @@ var robot = (function (world) {
                 do {
                     turnSentence = turnSentences[Math.floor(Math.random() * turnSentences.length)];
                 } while (/away/.test(turnSentence.text) && locations.relativeFromAbsolute[orientation][turnReference.direction] !== locations.relative.back);
-                console.log("exit loop. template is:", turnSentence);
 
                 direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
                 if (turnReference.attribute === null) {
@@ -2193,22 +2192,20 @@ var robot = (function (world) {
 
                 dalek.id = "dalek";
                 dalek.style.backgroundImage = "url(images/dalek.png)";
-                dalek.style.height = "75px";
-                dalek.style.width = "75px";
                 dalek.style.backgroundSize = "100%";
                 dalek.style.position = "absolute";
                 dalek.style.zIndex = 2;
                 dalek.style.transform = "rotate(0deg)";
                 dalek.style.transition = "top 1s, left 1s, transform 2s";
 
-                var rect = world.objectAt(_location).cell.getBoundingClientRect();
-                dalek.style.top = rect.top + "px";
-                dalek.style.left = rect.left + "px";
-                dalek.style.height = rect.height + "px";
-                dalek.style.width = rect.width + "px";
-
                 document.body.appendChild(dalek);
             }
+
+            var rect = world.objectAt(_location).cell.getBoundingClientRect();
+            dalek.style.top = rect.top + "px";
+            dalek.style.left = rect.left + "px";
+            dalek.style.height = rect.height + "px";
+            dalek.style.width = rect.width + "px";
         },
         parse: parser.parse,
         generatePath: generatePath,
@@ -2350,6 +2347,23 @@ var simulator = (function() {
         verify: verify
     };
 
+    function match(condition, object, checkDirection) {
+        var match = object.name === condition.object.name;
+
+        var hasAttribute = typeof condition.object.attributes !== "undefined";
+        if(hasAttribute && typeof condition.object.attributes[0] === "string") {
+            match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
+        } else if(hasAttribute && typeof condition.object.attributes[0] === "object") {
+            match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
+        }
+
+        if(checkDirection) {
+            match = match && (object.position.relative === condition.orientation.direction);
+        }
+
+        return match;
+    }
+
     function start(args) {
         robot.start(args.row, args.column);
     }
@@ -2367,19 +2381,8 @@ var simulator = (function() {
                         .immediate
                         .objects
                         .reduce(function(matched, object) {
-                            var match = object.name === condition.object.name;
-
-                            var hasAttibute = typeof condition.object.attributes !== "undefined";
-                            if(hasAttibute && typeof condition.object.attributes[0] === "string") {
-                                match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
-                            } else if(hasAttibute && typeof condition.object.attributes[0] === "object") {
-                                match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
-                            }
-
-                            match = match && (object.position.relative === condition.orientation.direction);
-
-                            return matched || match;
-                    }, false);
+                            return matched || match(condition, object, true);
+                        }, false);
 
                     i++;
                 }
@@ -2389,12 +2392,90 @@ var simulator = (function() {
         }
     }
 
-    function move() {
+    function move(args) {
+        if(typeof args.distance !== "undefined") {
+            robot.move(args.distance);
+        } else {
+            args.until.reduce(function(result, condition) {
+                var satisfied = false;
+                var crashed = false;
+                while(!crashed && !satisfied) {
+                    try {
+                        satisfied = robot.move()
+                            .scan()
+                            .immediate
+                            .objects
+                            .reduce(function (matched, object) {
+                                return matched || match(condition, object, true);
+                            }, false);
+                    } catch(e) {
+                        crashed = true;
+                        console.error("Instructions unclear. I crashed into the wall.");
+                    }
+                }
 
+                return satisfied && !crashed && result;
+            }, true);
+        }
     }
 
-    function verify() {
+    function verify(args) {
+        var verified = args.that.reduce(function(result, condition) {
+            var satisfied = false;
+            var direction;
 
+            var scanData = robot.scan();
+            var immediate = scanData.immediate;
+            var lineOfSight = scanData.lineOfSight;
+            immediate.objects.forEach(function(object) {
+                lineOfSight[object.position.absolute].objects.push(object);
+            });
+
+            if(typeof condition.orientation === "undefined") {
+                satisfied = Object.keys(lineOfSight).reduce(function(objects, key) {
+                    return objects.concat(lineOfSight[key].objects);
+                }, []).reduce(function (matched, object) {
+                    return matched || (object.name === condition.object.name);
+                }, false);
+            } else if(typeof condition.orientation.direction !== "undefined") {
+                direction = (typeof locations.absolute[condition.orientation.direction] === "undefined") ? locations.absoluteFromRelative[robot.orientation()][condition.orientation.direction] : condition.orientation.direction;
+
+                var objects = Object.keys(lineOfSight).reduce(function (objects, key) {
+                    return lineOfSight[key].objects.reduce(function (objects, object) {
+                        if (object.position.absolute === direction) {
+                            objects.push(object);
+                        }
+
+                        return objects;
+                    }, objects);
+                }, []);
+
+                if (typeof condition.orientation.distance === "undefined") {
+                    satisfied = objects.reduce(function (matched, object) {
+                        return matched || (object.name === condition.object.name);
+                    }, false);
+                } else {
+                    satisfied = objects.filter(function (object) {
+                        var distance = robot.location().compare(locations.create(object.position.row, object.position.column)).distance;
+                        if (robot.location().row !== object.position.row && robot.location().column !== object.position.column) {
+                            distance--;
+                        }
+
+                        return (distance === parseInt(condition.orientation.distance.magnitude, 10));
+                    }).reduce(function (matched, object) {
+                        return matched || (object.name === condition.object.name);
+                    }, false);
+                }
+            }
+
+            return satisfied && result;
+        }, true);
+
+        if(verified) {
+            console.log("We are where we need to be");
+        } else {
+            console.log("We are at the wrong place");
+        }
     }
 
     function simulate(program) {
