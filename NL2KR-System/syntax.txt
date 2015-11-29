@@ -1,0 +1,16 @@
+and	(NP\NP)/NP
+and	(S\NP)/(S\NP)
+and	(NP\NP)/(NP\NP)
+and	(N\N)/N
+and	N/N
+and	((S\NP)\(S\NP))/(S\NP)
+Any	S/S
+any	NP/N
+Are	S/S
+language1	N
+List	S/S
+Show	S/S
+show	S/S
+There	S/(S\NP)
+there	S/S
+turn	(S\NP)

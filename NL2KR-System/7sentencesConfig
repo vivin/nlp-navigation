@@ -1,0 +1,19 @@
+#Mon May 11 15:02:06 MST 2015
+Loutput=.\\examples\\7sentences\\trained_dict.txt
+ccg=S/S
+function=
+Tdictionary=.\\examples\\7sentences\\trained_dict.txt
+Ldictionary=.\\examples\\7sentences\\dict.txt
+sentence=List jobs requiring reqdeg1 using language1 
+Lsyntax=.\\examples\\7sentences\\syntax.txt
+inverse_function_output=l(x0, l(x, g(and, a(x0,x), f(loc, x, loc1))))
+argument=
+inverse_function=
+syntaxFile=.\\examples\\7sentences\\syntax.txt
+inverse_argument=l(x, f(loc,x,loc1))
+lexicon=.\\examples\\7sentences\\dict.txt
+Tdata=.\\examples\\7sentences\\train.txt
+word=List
+batchSentences=
+Tsyntax=.\\examples\\7sentences\\syntax.txt
+Ldata=.\\examples\\7sentences\\train.txt

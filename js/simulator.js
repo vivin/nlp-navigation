@@ -1020,95 +1020,6 @@ var robot = (function (world) {
         return sensorData;
     }
 
-    function formal() {
-        function checkattribute(references, type) {
-            var output;
-            switch (type) {
-                case "turn":
-                    if (references.attribute == null) {
-                        output = "turn(until(is(" + references.name + ", at(" + references.direction + "))))";
-                    }
-                    else if (typeof references.attribute === "string") {
-                        output = "turn(until(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + "))))";
-                    }
-                    else {
-                        output = "turn(until(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + "))))";
-                    }
-                    break;
-                case "move":
-                    if (references.attribute == null) {
-                        output = "move(until(is(" + references.name + ", at(" + references.direction + "))))";
-                    }
-                    else if (typeof references.attribute === "string") {
-                        output = "move(until(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + "))))";
-                    }
-                    else {
-                        output = "move(until(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + "))))";
-                    }
-                    break;
-                case "verify":
-                    if (references.attribute == null) {
-                        output = "verify(that(is(" + references.name + ", at(" + references.direction + ",spaces(" + references.distance + ")))))";
-                    }
-                    else if (typeof references.attribute === "string") {
-                        output = "verify(that(is(" + references.name + "(" + references.attribute + "), at(" + references.direction + ",spaces(" + references.distance + ")))))";
-                    }
-                    else {
-                        output = "verify(that(is(" + references.name + "(" + references.attribute.name + "(" + references.attribute.attribute + ")), at(" + references.direction + ",spaces(" + references.distance + ")))))";
-                    }
-                    break;
-
-            }
-            return output;
-        }
-
-        var paths = generatePath();
-
-        var result = [];
-        result.push("start(" + paths[0].location.row + "," + paths[0].location.column + ")");
-        var orientation = locations.absolute.north;
-
-        for (var i = 0; i < paths.length - 1; i++) {
-            var direction = paths[i].location.compare(paths[i + 1].location, orientation);
-            if (paths[i].turnSource.type == "unconditional") {
-                if (paths[i].turnSource.useRelativeDirection) {
-                    orientation = direction.absolute;
-                    result.push("turn(" + direction.relative + ")");
-                    result.push("move(steps(" + direction.distance + "))");
-
-                }
-                else {
-                    orientation = direction.absolute;
-                    result.push("turn(" + direction.absolute + ")");
-                    result.push("move(steps(" + direction.distance + "))");
-                }
-
-            }
-            else {
-                var outstring;
-                outstring = checkattribute(paths[i].turnSource.reference, "turn");
-                result.push(outstring);
-                if (paths[i + 1].moveDestination.type == "unconditional") {
-                    result.push("move(steps(" + direction.distance + "))");
-                }
-                else {
-                    outstring = checkattribute(paths[i + 1].moveDestination.reference, "move");
-                    result.push(outstring);
-
-                }
-                if (paths[i + 1].verifyDestination) {
-                    outstring = checkattribute(paths[i + 1].verifyDestination.reference, "verify");
-                    result.push(outstring);
-
-                }
-
-                orientation = direction.absolute;
-            }
-        }
-
-        return result;
-    }
-
     function generateFormal(paths) {
         var templates = {
             start: "start({0}, {1})",
@@ -2132,7 +2043,6 @@ var robot = (function (world) {
     }
 
     function turn(direction) {
-        var originalOrientation = _orientation;
         if (locations.absolute[direction]) {
             _orientation = direction;
         } else {
@@ -2208,135 +2118,16 @@ var robot = (function (world) {
             dalek.style.width = rect.width + "px";
         },
         parse: parser.parse,
-        generatePath: generatePath,
         generate: function () {
             var path = generatePath();
-            console.log(generateFormal(path));
-            console.log(generateEnglish(path));
+            return {
+                formal: generateFormal(path),
+                english: generateEnglish(path)
+            };
         }
     };
 
 })(world);
-
-var simulation = (function () {
-    function scanAndCheck(until) {
-        var i;
-        var flag = false;
-        var scan = robot.scan();
-        until.forEach(function (condition) {
-            var direction = null;
-            var distance = null;
-            if (typeof condition.orientation != 'undefined') {
-                direction = condition.orientation.direction;
-                if (typeof(condition.orientation.distance) != 'undefined') {
-                    distance = parseInt(condition.orientation.distance.magnitude) + 1;
-                }
-            }
-            if (distance == null) {
-                for (i = 0; i < scan.immediate.objects.length; i++) {
-                    var object = scan.immediate.objects[i];
-                    if (object.name === condition.object.name) {
-                        if (typeof (object.attribute) === 'string') {
-                            if ((typeof( condition.object.attributes) == 'undefined') ||
-                                ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
-                                if (direction != null)
-                                    if (direction !== object.position.relative)
-                                        continue;
-                                flag = true;
-                                break;
-                            }
-                        }
-                        else {
-                            if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
-                                condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
-                                if (direction != null)
-                                    if (direction !== object.position.relative)
-                                        continue;
-                                flag = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else if (direction != null && distance != null) {
-                for (i = 0; i < scan.lineOfSight[robot.orientation()].objects.length; i++) {
-                    object = scan.lineOfSight[robot.orientation()].objects[i];
-                    var currentPosition = locations.create(object.position.row, object.position.column);
-                    if (distance == currentPosition.compare(robot.location()).distance) {
-                        if (object.position.relative === direction &&
-                            object.name === condition.object.name) {
-                            if (typeof (object.attribute) === 'string') {
-                                if ((typeof( condition.object.attributes) == 'undefined') ||
-                                    ( typeof( condition.object.attributes[0]) != 'undefined' && condition.object.attributes[0] === object.attribute)) {
-                                    flag = true;
-                                    break;
-                                }
-                            }
-                            else {
-                                if (typeof( condition.object.attributes) == 'undefined' || (typeof(condition.object.attributes[0]) != 'undefined' &&
-                                    condition.object.attributes[0].name === object.attribute.name && condition.object.attributes[0].attributes[0] == object.attribute.attribute)) {
-                                    flag = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        return flag;
-    }
-
-    function simulate(sentence) {
-        if (sentence.length != 0) {
-            var object = parser.parse(sentence).forEach(function (element) {
-                var scan;
-                var action = element.instruction;
-                //alert(action)
-                if (action === 'start')
-                    robot.start(element.arguments.row, element.arguments.column);
-                if (action === 'turn') {
-                    if (element.arguments.direction != null)
-                        robot.turn(element.arguments.direction);
-                    else if (element.arguments.until != null) {
-                        var numberOfTurns = 0;
-                        do {
-                            if (scanAndCheck(element.arguments.until)) break;
-                            else robot.turn('left');
-                            numberOfTurns += 1
-                        } while (numberOfTurns < 4)
-                    }
-                }
-                if (action === 'move') {
-                    scan = robot.scan();
-                    if (scan.immediate.paths.indexOf(scan.orientation) >= 0) {
-                        if (element.arguments.distance != null) {
-                            robot.move(element.arguments.distance.magnitude);
-                        }
-                        else
-                            do {
-                                robot.move();
-                                if (scanAndCheck(element.arguments.until)) break;
-                            } while (true)
-                    }
-                }
-                if (action === 'verify') {
-                    scan = robot.scan();
-                    if (element.arguments.that != null) {
-                        if (!scanAndCheck(element.arguments.that))
-                            throw new Error('Location not matched');
-                    }
-                }
-            });
-        }
-    }
-
-    return {
-        simulate: simulate
-    }
-})();
 
 var simulator = (function() {
 
@@ -2491,13 +2282,99 @@ var simulator = (function() {
 
 })();
 
+var toggle = true;
+
 window.onload = function () {
     world.render();
     robot.render();
+
+    document.addEventListener("keypress", function(event) {
+        if(String.fromCharCode(event.keyCode).toLowerCase() === "t" && toggle) {
+            toggleNatural();
+        }
+    });
+
+    document.getElementById("translate").addEventListener("click", translate);
+    document.getElementById("generate").addEventListener("click", generate);
+    document.getElementById("cancel").addEventListener("click", function() {
+        toggle = true;
+        toggleNatural();
+    });
     //simulation.simulate(sentence)
 };
+
+function generate() {
+    toggle = true;
+    toggleNatural();
+
+    var generated = robot.generate();
+    console.log(generated);
+    notify("info", '<div class="monospaced">' + generated.formal.join('<br />') + '</div><br />' + '<div class="non-monospaced">' + generated.english.join('. ') + '</div>', null, 6000);
+}
+
+function translate() {
+}
+
+function notify(type, message, monospaced, time) {
+    var vWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    var vHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    var status = document.getElementById("status");
+    status.innerHTML = message;
+
+    if(type === "info") {
+        status.className = "interface info";
+    } else if(type === "error") {
+        status.className = "interface error";
+    }
+
+    if(monospaced) {
+        status.className += " monospaced";
+    } else {
+        status.className += " non-monospaced";
+    }
+
+    status.style.opacity = 1;
+    var rect = status.getBoundingClientRect();
+    status.style.top = ((vHeight - rect.height) / 2) + "px";
+    status.style.left = ((vWidth - rect.width) / 2) + "px";
+    status.style.zIndex = 5;
+
+    setTimeout(function() {
+        status.style.opacity = 0;
+        status.style.zIndex = -1;
+    }, time || 3000);
+}
+
+function toggleNatural() {
+    var vWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    var vHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    var natural = document.getElementById("natural");
+    if(natural.style.opacity == 0) {
+        natural.style.opacity = 1;
+        natural.style.zIndex = 3;
+
+        var rect = natural.getBoundingClientRect();
+        natural.style.top = ((vHeight - rect.height) / 2) + "px";
+        natural.style.left = ((vWidth - rect.width) / 2) + "px";
+
+        toggle = false;
+    } else {
+        natural.style.opacity = 0;
+        natural.style.zIndex = -1;
+    }
+}
 
 window.onresize = function () {
     world.render();
     robot.render();
+
+    var vWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    var vHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    var natural = document.getElementById("natural");
+    var rect = natural.getBoundingClientRect();
+    natural.style.top = ((vHeight - rect.height) / 2) + "px";
+    natural.style.left = ((vWidth - rect.width) / 2) + "px";
 };

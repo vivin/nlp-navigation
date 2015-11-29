@@ -1,0 +1,36 @@
+using	(S\NP)/NP	l(x1, l(x0, l(x, g(and, a(x0, x), a(x1, x)))))	1.0986123
+using	(S\NP)/NP	l(x, x)	-1.0
+loc1	N	l(x, f(loc, x, loc1))	1.3862944
+loc1	N	l(x0, l(x, g(and, a(x0, x), f(loc, x, loc1))))	0.6931472
+loc1	N	l(x0, l(x, f(answer, g(and, a(x0, x), f(loc, x, loc1)))))	0.6931472
+in	((S\NP)\(S\NP))/NP	l(x, x)	1.3862944
+in	(S\NP)/NP	l(x1, l(x0, l(x, g(and, a(x0, x), a(x1, x)))))	1.0986123
+in	(S\NP)/NP	l(x, x)	1.3862944
+in	(S\NP)/NP	l(x1, l(x0, l(x, f(answer, g(and, a(x0, x), a(x1, x))))))	1.0986123
+language1	N	l(x, f(language, x, language1))	1.0986123
+jobs	N	l(x, f(job, x))	2.8903718
+area1	N	l(x, f(area, x, area1))	1.7917595
+least	N	l(x, x)	-1.0
+any	NP/N	l(x, x)	2.0794415
+reqdeg1	N	l(x, f(reqdeg, x, reqdeg1))	0.6931472
+reqdeg1	N	l(x0, l(x, g(and, a(x0, x), f(reqdeg, x, reqdeg1))))	0.0
+with	(NP\NP)/NP	l(x, x)	0.6931472
+with	(NP\NP)/NP	l(x3, l(x2, l(x1, a(x1, l(x0, l(x, g(and, a(x0, x), a(x2, x), a(x3, x))))))))	0.0
+with	(NP\NP)/NP	l(x3, l(x2, l(x1, a(x1, l(x0, l(x, f(answer, g(and, a(x0, x), a(x2, x), a(x3, x)))))))))	0.0
+with	(NP\NP)/NP	l(x1, l(x0, l(x, g(and, a(x0, x), a(x1, x)))))	-1.0
+company1	N	l(x, f(company, x, company1))	0.6931472
+company1	N	l(x2, l(x1, a(x1, l(x0, l(x, g(and, a(x0, x), a(x2, x), f(company, x, company1)))))))	0.0
+company1	N	l(x2, l(x1, a(x1, l(x0, l(x, f(answer, g(and, a(x0, x), a(x2, x), f(company, x, company1))))))))	0.0
+Are	S/S	l(p, l(x, f(answer, a(p, x))))	1.3862944
+Are	S/S	l(x, x)	1.3862944
+requiring	(S\NP)/NP	l(x1, l(x0, l(x, g(and, a(x0, x), a(x1, x)))))	0.0
+requiring	(NP\NP)/NP	l(x, x)	0.0
+requiring	(NP\NP)/NP	l(x1, l(x0, l(x, g(and, a(x0, x), a(x1, x)))))	0.0
+requiring	(NP\NP)/NP	l(x3, l(x2, l(x1, a(x1, l(x0, l(x, f(answer, g(and, a(x0, x), a(x2, x), a(x3, x)))))))))	-1.0
+requiring	(NP\NP)/NP	l(x3, l(x2, l(x1, a(x1, l(x0, l(x, g(and, a(x0, x), a(x2, x), a(x3, x))))))))	-1.0
+there	S/S	l(x, x)	2.0794415
+specializing	S\NP	l(x, x)	1.3862944
+List	S/S	l(p, l(x, f(answer, a(p, x))))	1.7917595
+List	S/S	l(x, x)	1.0986123
+Show	S/S	l(x, x)	-1.0
+Show	S/S	l(p, l(x, f(answer, a(p, x))))	0.0

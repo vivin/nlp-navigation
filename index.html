@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,900' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700' rel='stylesheet' type='text/css'>
     <meta charset="UTF-8">
     <title>Navigation Simulator</title>
     <script src="js/simulator.js"></script>
 
     <style>
+        .monospaced {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .non-monospaced {
+            font-family: 'Roboto', sans-serif;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             font-weight: 900;
@@ -18,7 +27,7 @@
             border-collapse:collapse;
         }
 
-        table td{
+        table td {
             text-align: center;
         }
 
@@ -27,6 +36,33 @@
             height: calc(100vh - 25px);
             margin: auto;
         }
+
+        div.interface {
+            position: absolute;
+            width:  auto;
+            height: auto;
+            padding: 20px;
+            border: 3px solid;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity .5s;
+            z-index: 3;
+            top: 0;
+            left: 0;
+        }
+
+        div.info {
+            border-color: #007700;
+            background-color: #ace1af;
+            text-align: center;
+        }
+
+        div.error {
+            border-color: #770000;
+            background-color: #e1acaf;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -36,5 +72,12 @@
         </table>
     </div>
 
+    <div id = "natural" class = "interface info">
+        <textarea id = "instructions" rows = 10 cols = 80></textarea>
+        <center>
+            <input type="button" id="translate" value="Translate" /> &nbsp;&nbsp;&nbsp;&nbsp; <input type="button" id="generate" value="Generate" /> &nbsp;&nbsp;&nbsp;&nbsp; <input type="button" id="cancel" value="Cancel" />
+        </center>
+    </div>
+    <div id = "status" class = "interface info"></div>
 </body>
 </html>
