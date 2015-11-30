@@ -2313,6 +2313,26 @@ function generate() {
 }
 
 function translate() {
+    var template = "Loutput=.\\resources\\nl2kr\\trained.txt" +
+            "ccg=S/S\n" +
+            "function=\n" +
+            "Tdictionary=.\\resources\nl2kr\\trained.txt\n" +
+            "Ldictionary=.\\resources\nl2kr\\dict.txt\n" +
+            "sentence={SENTENCE}\n" +
+            "Lsyntax=.\\resources\nl2kr\\syntax.txt\n" +
+            "inverse_function_output=\n" +
+            "argument=\n" +
+            "inverse_function=\n" +
+            "syntaxFile=.\\resources\nl2kr\\syntax.txt\n" +
+            "inverse_argument=\n" +
+            "lexicon=.\\resources\nl2kr\\dict.txt\n" +
+            "Tdata=.\\resources\nl2kr\\train.txt\n" +
+            "word=List\n" +
+            "batchSentences=\n" +
+            "Tsyntax=.\\resources\nl2kr\\syntax.txt\n" +
+            "Ldata=.\\resources\nl2kr\\train.txt";
+
+    var instructions = document.getElementById("instructions").value;
 }
 
 function notify(type, message, monospaced, time) {
