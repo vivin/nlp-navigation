@@ -1,0 +1,5 @@
+face left	turn(left)
+turn left	turn(left)
+take a left	turn(left)
+face right	turn(right)
+turn right	turn(right)

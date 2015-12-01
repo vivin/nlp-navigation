@@ -83,49 +83,61 @@ var locations = (function () {
 
     function create(row, column) {
         return {
-            row: row,
-            column: column,
+            row: parseInt(row, 10),
+            column: parseInt(column, 10),
             north: function () {
-                return create(row - 1 < 0 ? 0 : row - 1, column);
+                return create(this.row - 1 < 0 ? 0 : this.row - 1, this.column);
             },
             south: function () {
-                return create(row + 1 > 14 ? 14 : row + 1, column);
+                return create(this.row + 1 > 14 ? 14 : this.row + 1, this.column);
             },
             east: function () {
-                return create(row, column + 1 > 14 ? 14 : column + 1);
+                return create(this.row, this.column + 1 > 14 ? 14 : this.column + 1);
             },
             west: function () {
-                return create(row, column - 1 < 0 ? 0 : column - 1);
+                return create(this.row, this.column - 1 < 0 ? 0 : this.column - 1);
+            },
+            isNorth: function (other) {
+                return this.row < other.row;
+            },
+            isSouth: function (other) {
+                return this.row > other.row;
+            },
+            isEast: function (other) {
+                return this.column > other.column;
+            },
+            isWest: function (other) {
+                return this.column < other.column;
             },
             clone: function () {
-                return create(row, column);
+                return create(this.row, this.column);
             },
             compare: function (other, orientation) {
                 orientation = orientation || absolute.north;
-                var distance = Math.abs(other.row - row) + Math.abs(other.column - column);
+                var distance = Math.abs(other.row - this.row) + Math.abs(other.column - this.column);
 
-                if (other.row > row) {
+                if (other.row > this.row) {
                     return {
                         absolute: absolute.south,
                         relative: relativeFromAbsolute[orientation][absolute.south],
                         distance: distance,
                         coincident: false
                     };
-                } else if (other.row < row) {
+                } else if (other.row < this.row) {
                     return {
                         absolute: absolute.north,
                         relative: relativeFromAbsolute[orientation][absolute.north],
                         distance: distance,
                         coincident: false
                     };
-                } else if (other.column > column) {
+                } else if (other.column > this.column) {
                     return {
                         absolute: absolute.east,
                         relative: relativeFromAbsolute[orientation][absolute.east],
                         distance: distance,
                         coincident: false
                     };
-                } else if (other.column < column) {
+                } else if (other.column < this.column) {
                     return {
                         absolute: absolute.west,
                         relative: relativeFromAbsolute[orientation][absolute.west],
@@ -140,7 +152,7 @@ var locations = (function () {
                 }
             },
             toString: function () {
-                return "(" + row + ", " + column + ")";
+                return "(" + this.row + ", " + this.column + ")";
             }
         };
     }
@@ -1113,6 +1125,7 @@ var robot = (function (world) {
                         instructions.push(templates.move.conditional.withoutDirection.withNestedAttribute.interpolate(moveReference.name, moveReference.attribute.name, moveReference.attribute.attribute));
                     }
                 } else {
+
                     direction = destination.moveDestination.useRelativeDirection ? locations.relativeFromAbsolute[orientation][moveReference.direction] : moveReference.direction;
                     if (moveReference.attribute === null) {
                         instructions.push(templates.move.conditional.withDirection.withoutAttribute.interpolate(moveReference.name, direction));
@@ -1567,12 +1580,12 @@ var robot = (function (world) {
                 sentences.push(turnSentence.text.interpolate(source.turnSource.useRelativeDirection ? comparison.relative : comparison.absolute));
 
                 if (turnSentence.fragment) {
-                    sentences.push(", ");
+                    //sentences.push(", ");
                 }
             } else {
                 var turnReference = source.turnSource.reference;
-                var attribute = turnReference.attribute === null ? "withoutAttribute" : typeof turnReference.attribute === "string" ? "withAttribute" : "withNestedAttribute";
-                if (!source.turnSource.useRelativeDirection) {
+                var attribute = !turnReference.attribute ? "withoutAttribute" : typeof turnReference.attribute === "string" ? "withAttribute" : "withNestedAttribute";
+                if (!source.turnSource.useRelativeDirection && locations.relativeFromAbsolute[orientation][turnReference.direction] !== locations.relative.back) {
                     turnSentences = templates.turn.conditional[attribute].filter(function (sentence) {
                         return !sentence.relationalOnly;
                     });
@@ -1580,9 +1593,7 @@ var robot = (function (world) {
                     turnSentences = templates.turn.conditional[attribute];
                 }
 
-                do {
-                    turnSentence = turnSentences[Math.floor(Math.random() * turnSentences.length)];
-                } while (/away/.test(turnSentence.text) && locations.relativeFromAbsolute[orientation][turnReference.direction] !== locations.relative.back);
+                turnSentence = turnSentences[Math.floor(Math.random() * turnSentences.length)];
 
                 direction = source.turnSource.useRelativeDirection ? locations.relativeFromAbsolute[orientation][turnReference.direction] : turnReference.direction;
                 if (turnReference.attribute === null) {
@@ -1855,6 +1866,7 @@ var robot = (function (world) {
                 if (useDirection || object.name === "hallway") {
                     object.direction = random.position.absolute;
                 }
+
             } while (object.name === "wall");
 
             return object;
@@ -1998,7 +2010,9 @@ var robot = (function (world) {
                 turn(direction);
 
                 coordinate = {};
-                coordinate.location = findDestination(scanData, lastLocation, direction);
+                do {
+                    coordinate.location = findDestination(scanData, lastLocation, direction);
+                } while(coordinate.location.compare(lastLocation).coincident);
                 start(coordinate.location.row, coordinate.location.column);
 
                 scanData = scan();
@@ -2149,7 +2163,7 @@ var simulator = (function() {
         }
 
         if(checkDirection) {
-            match = match && (object.position.relative === condition.orientation.direction);
+            match = match && (locations.absolute[condition.orientation.direction] ? (object.position.absolute === condition.orientation.direction) : (object.position.relative === condition.orientation.direction));
         }
 
         return match;
@@ -2157,13 +2171,18 @@ var simulator = (function() {
 
     function start(args) {
         robot.start(args.row, args.column);
+        return {
+            instruction: "start",
+            successful: true
+        };
     }
 
     function turn(args) {
+        var successful = true;
         if(typeof args.direction !== "undefined") {
             robot.turn(args.direction);
         } else {
-            args.until.reduce(function(result, condition) {
+            successful = args.until.reduce(function(result, condition) {
                 var satisfied = false;
                 var i = 0;
                 while(i < 4 && !satisfied) {
@@ -2178,16 +2197,26 @@ var simulator = (function() {
                     i++;
                 }
 
+                if(!satisfied) {
+                    console.error("I'm getting dizzy!")
+                }
+
                 return satisfied && result;
             }, true);
         }
+
+        return {
+            instruction: "turn",
+            successful: successful
+        };
     }
 
     function move(args) {
+        var successful = true;
         if(typeof args.distance !== "undefined") {
             robot.move(args.distance);
         } else {
-            args.until.reduce(function(result, condition) {
+            successful = args.until.reduce(function(result, condition) {
                 var satisfied = false;
                 var crashed = false;
                 while(!crashed && !satisfied) {
@@ -2208,6 +2237,11 @@ var simulator = (function() {
                 return satisfied && !crashed && result;
             }, true);
         }
+
+        return {
+            instruction: "move",
+            successful: successful
+        };
     }
 
     function verify(args) {
@@ -2233,7 +2267,9 @@ var simulator = (function() {
 
                 var objects = Object.keys(lineOfSight).reduce(function (objects, key) {
                     return lineOfSight[key].objects.reduce(function (objects, object) {
-                        if (object.position.absolute === direction) {
+                        var directionCheckFunctionName = "is" + direction.substr(0, 1).toUpperCase() + direction.substr(1);
+                        var objectLocation = locations.create(object.position.row, object.position.column);
+                        if (objectLocation[directionCheckFunctionName](robot.location())) {
                             objects.push(object);
                         }
 
@@ -2262,18 +2298,17 @@ var simulator = (function() {
             return satisfied && result;
         }, true);
 
-        if(verified) {
-            console.log("We are where we need to be");
-        } else {
-            console.log("We are at the wrong place");
-        }
+        return {
+            instruction: "verify",
+            successful: verified
+        };
     }
 
     function simulate(program) {
         var instructions = parser.parse(program);
-        instructions.forEach(function(instruction) {
-            handlers[instruction.instruction].call(null, instruction.arguments);
-        });
+        return instructions.reduce(function(result, instruction) {
+            return result && handlers[instruction.instruction].call(null, instruction.arguments);
+        }, true);
     }
 
     return {
@@ -2292,6 +2327,10 @@ window.onload = function () {
         if(String.fromCharCode(event.keyCode).toLowerCase() === "t" && toggle) {
             toggleNatural();
         }
+
+        if(String.fromCharCode(event.keyCode).toLowerCase() === "s") {
+            simulate(["start(13, 6)", "turn(until(is(door(open), at(left))))", "move(until(is(door(main), at(south))))", "turn(left)", "move(until(is(door(red),at(left))))", "verify(that(is(hallway(carpet(red)), at(east))))"]);
+        }
     });
 
     document.getElementById("translate").addEventListener("click", translate);
@@ -2300,6 +2339,13 @@ window.onload = function () {
         toggle = true;
         toggleNatural();
     });
+/*
+    for(var i = 0; i < 100; i++) {
+        var generated = robot.generate();
+        for(var j = 0; j < generated.english.length; j++) {
+            console.log(generated.english[j] + "#TAB#" + generated.formal[j + 1]);
+        }
+    }*/
     //simulation.simulate(sentence)
 };
 
@@ -2308,8 +2354,52 @@ function generate() {
     toggleNatural();
 
     var generated = robot.generate();
-    console.log(generated);
     notify("info", '<div class="monospaced">' + generated.formal.join('<br />') + '</div><br />' + '<div class="non-monospaced">' + generated.english.join('. ') + '</div>', null, 6000);
+
+    simulate(generated.formal);
+}
+
+function simulate(formal) {
+    var transitionEnded = false;
+    document.getElementById("dalek").removeEventListener("transitionend", setTransitionEnded);
+    document.getElementById("dalek").addEventListener("transitionend", setTransitionEnded);
+
+    function setTransitionEnded() {
+        transitionEnded = true;
+    }
+
+
+    (function run(i) {
+        notify("info", '<div class="monospaced">' + formal[i] + '</div>', null, 2000);
+        setTimeout(function() {
+            transitionEnded = false;
+
+            var result = simulator.simulate(formal[i]);
+            var transitionTimeout = setTimeout(function() {
+                transitionEnded = true;
+            }, 2500);
+
+            transitionEnded = transitionEnded || !result.successful;
+
+            var interval = setInterval(function() {
+                if(transitionEnded) {
+                    clearTimeout(transitionTimeout);
+                    clearInterval(interval);
+
+                    i++;
+                    if(!result.successful && result.instruction !== "verify") {
+                        notify("error", '<div class="monospaced" style="display: inline-block">' + result.instruction + '</div> instruction failed. Complete instruction was:<br /><div class="monospaced">' + formal[i - 1] + '</div>', null, 6000);
+                    } else if(!result.successful && result.instruction === "verify") {
+                        notify("error", 'Verification failed! We are not at the correct destination! Complete instruction was:<br /><div class="monospaced">' + formal[i - 1] + '</div>', null, 4000);
+                    } else if(result.successful && result.instruction === "verify") {
+                        notify("info", "Verification successful! We are the correct destination!", null, 4000);
+                    } else if(i < formal.length) {
+                        run(i);
+                    }
+                }
+            }, 100);
+        }, 2250)
+    })(0);
 }
 
 function translate() {
