@@ -217,7 +217,7 @@ To train the model, we used 70 sentences that cover the different variations of 
 
 \section{Conclusion and Results}
 
-Against the five auto-generated test-sets of, the model reported an average accuracy of XX\%. Evaluation using the simulator gave similar results as well. In both scenarios, we noticed that the incorrect translation was \textit{syntactically} incorrect, rather than \textit{semantically} incorrect. Hence, we never really encountered a situation where the robot didn't arrive at the correct destination. Instead, the simulator would report parse-errors since the formal form didn't match the grammar that we had defined.
+Against the five auto-generated test-sets of, the model reported an average accuracy of 64.4\%. Evaluation using the simulator gave similar results as well. In both scenarios, we noticed that the incorrect translation was \textit{syntactically} incorrect, rather than \textit{semantically} incorrect. Hence, we never really encountered a situation where the robot didn't arrive at the correct destination. Instead, the simulator would report parse-errors since the formal form didn't match the grammar that we had defined.
 
 While some inaccuracies are to be expected, we think that it might be possible to improve the performance of the model by training it against a larger data-set so that it can generalize better. However, some of the issues with NL2KR will need to be addressed as well, so that we can provide more-sensible semantics for certain words. We also noticed that both learning and testing seemed to take a very long time. Simply evaluating against the training set of 70 sentences seemed to take at least 20 minutes. We also noticed that this was most prevalent in sentences with complex parse-trees, and also seemed to be affected by the number of overrides in our syntax-override file.
 
@@ -229,13 +229,13 @@ While training and testing, most of our difficulty stemmed from having to define
 \hline
 \rowcolor[HTML]{C0C0C0} 
 \textbf{Test Set \#} & \textbf{Sentences} & \textbf{Correct} & \textbf{Incorrect} & \textbf{Accuracy} \\ \hline
-1                    & 100                      &                               &                                 &                   \\ \hline
+1                    & 100                      & 64                            & 36                              & 64\%              \\ \hline
 \rowcolor[HTML]{EFEFEF} 
-2                    & 100                      &                               &                                 &                   \\ \hline
-3                    & 100                      &                               &                                 &                   \\ \hline
+2                    & 100                      & 64                            & 36                              & 64\%              \\ \hline
+3                    & 100                      & 68                            & 32                              & 68\%              \\ \hline
 \rowcolor[HTML]{EFEFEF} 
-4                    & 100                      &                               &                                 &                   \\ \hline
-5                    & 100                      &                               &                                 &                   \\ \hline
+4                    & 100                      & 66                            & 34                              & 66\%              \\ \hline
+5                    & 100                      & 60                            & 40                                & 60\%              \\ \hline
 \end{tabular}
 }
 \caption{Performance of trained model across 5 test-sets}\label{table:results}
