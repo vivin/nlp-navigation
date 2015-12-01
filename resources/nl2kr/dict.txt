@@ -31,6 +31,7 @@ grey	N/N	#x.x @ grey
 hallway	N	#x.hallway(x)
 hallway	N	#x.x @ #y.#z.hallway(z @ y)
 in	(NP\NP)/NP	#x.#y.is(y,at(x))
+in	(NP\NP)/NP	#x.#y.y @ x
 in	NP/NP	#x.x
 is	N	#x.x
 is	N	#x.#y.is(x,y)
@@ -47,11 +48,9 @@ north	NP	north
 now	(S\NP)/(S\NP)	#x.x
 of	(NP\NP)/NP	#x.x
 of	(NP\NP)/NP	#x.#y.is(x,at(y))
-of	(NP\NP)/NP	#x.#y.#z.z @ is(x,at(y))
 old	N/N	#x.x @ old
 on	(NP\NP)/NP	#x.at(x)
 on	(NP\NP)/NP	#x.#y.turn(until(is(y,x)))
-on	(NP\NP)/NP	#x.#y.#z.is(y,at(x,z))
 open	N/N	#x.x @ open
 painting	NP	#x.painting(x)
 painting	N	#x.painting(x)
@@ -70,7 +69,6 @@ spaces	N	#x.spaces(x)
 steel	N/N	#x.x @ steel
 the	(NP/NP)/N	#x.x
 the	(NP/NP)/N	#x.#y.y @ x
-the	NP/N	#x.at(x)
 the	NP/N	#x.x
 the	NP	#x.x
 there	NP	#x.verify(x)
