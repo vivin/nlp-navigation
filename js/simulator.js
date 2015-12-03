@@ -307,7 +307,7 @@ var parser = (function () {
         result.data = {
             instruction: "start",
             arguments: {
-                row: check.data,
+                row: parseInt(check.data, 10),
                 column: -1
             }
         };
@@ -322,7 +322,7 @@ var parser = (function () {
             return check;
         }
 
-        result.data.arguments.column = check.data;
+        result.data.arguments.column = parseInt(check.data, 10);
 
         check = expect(tokens, ")");
         if (!check.successful) {
@@ -653,7 +653,7 @@ var parser = (function () {
             successful: true,
             data: {
                 unit: unit,
-                magnitude: check.data
+                magnitude: parseInt(check.data, 10)
             }
         };
 
@@ -2214,7 +2214,7 @@ var simulator = (function() {
     function move(args) {
         var successful = true;
         if(typeof args.distance !== "undefined") {
-            robot.move(args.distance);
+            robot.move(args.distance.magnitude);
         } else {
             successful = args.until.reduce(function(result, condition) {
                 var satisfied = false;
@@ -2226,7 +2226,7 @@ var simulator = (function() {
                             .immediate
                             .objects
                             .reduce(function (matched, object) {
-                                return matched || match(condition, object, true);
+                                return matched || match(condition, object, typeof condition.orientation !== "undefined");
                             }, false);
                     } catch(e) {
                         crashed = true;
@@ -2260,7 +2260,16 @@ var simulator = (function() {
                 satisfied = Object.keys(lineOfSight).reduce(function(objects, key) {
                     return objects.concat(lineOfSight[key].objects);
                 }, []).reduce(function (matched, object) {
-                    return matched || (object.name === condition.object.name);
+                    var match = object.name === condition.object.name;
+
+                    var hasAttribute = typeof condition.object.attributes !== "undefined";
+                    if(hasAttribute && typeof condition.object.attributes[0] === "string") {
+                        match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
+                    } else if(hasAttribute && typeof condition.object.attributes[0] === "object") {
+                        match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
+                    }
+
+                    return matched || match;
                 }, false);
             } else if(typeof condition.orientation.direction !== "undefined") {
                 direction = (typeof locations.absolute[condition.orientation.direction] === "undefined") ? locations.absoluteFromRelative[robot.orientation()][condition.orientation.direction] : condition.orientation.direction;
@@ -2277,9 +2286,20 @@ var simulator = (function() {
                     }, objects);
                 }, []);
 
+                console.log("objects is", objects);
+
                 if (typeof condition.orientation.distance === "undefined") {
                     satisfied = objects.reduce(function (matched, object) {
-                        return matched || (object.name === condition.object.name);
+                        var match = object.name === condition.object.name;
+
+                        var hasAttribute = typeof condition.object.attributes !== "undefined";
+                        if(hasAttribute && typeof condition.object.attributes[0] === "string") {
+                            match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
+                        } else if(hasAttribute && typeof condition.object.attributes[0] === "object") {
+                            match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
+                        }
+
+                        return matched || match;
                     }, false);
                 } else {
                     satisfied = objects.filter(function (object) {
@@ -2290,7 +2310,16 @@ var simulator = (function() {
 
                         return (distance === parseInt(condition.orientation.distance.magnitude, 10));
                     }).reduce(function (matched, object) {
-                        return matched || (object.name === condition.object.name);
+                        var match = object.name === condition.object.name;
+
+                        var hasAttribute = typeof condition.object.attributes !== "undefined";
+                        if(hasAttribute && typeof condition.object.attributes[0] === "string") {
+                            match = match && (typeof object.attribute === "string") && (object.attribute === condition.object.attributes[0]);
+                        } else if(hasAttribute && typeof condition.object.attributes[0] === "object") {
+                            match = match && (typeof object.attribute === "object") && (object.attribute.name === condition.object.attributes[0].name) && (object.attribute.attribute === condition.object.attributes[0].attributes[0]);
+                        }
+
+                        return matched || match;
                     }, false);
                 }
             }
@@ -2322,14 +2351,11 @@ var toggle = true;
 window.onload = function () {
     world.render();
     robot.render();
+    robot.start(13, 8);
 
     document.addEventListener("keypress", function(event) {
         if(String.fromCharCode(event.keyCode).toLowerCase() === "t" && toggle) {
             toggleNatural();
-        }
-
-        if(String.fromCharCode(event.keyCode).toLowerCase() === "s") {
-            simulate(["start(13, 6)", "turn(until(is(door(open), at(left))))", "move(until(is(door(main), at(south))))", "turn(left)", "move(until(is(door(red),at(left))))", "verify(that(is(hallway(carpet(red)), at(east))))"]);
         }
     });
 
@@ -2339,14 +2365,8 @@ window.onload = function () {
         toggle = true;
         toggleNatural();
     });
-/*
-    for(var i = 0; i < 100; i++) {
-        var generated = robot.generate();
-        for(var j = 0; j < generated.english.length; j++) {
-            console.log(generated.english[j] + "#TAB#" + generated.formal[j + 1]);
-        }
-    }*/
-    //simulation.simulate(sentence)
+
+    require('nw.gui').Window.get().showDevTools();
 };
 
 function generate() {
@@ -2367,7 +2387,6 @@ function simulate(formal) {
     function setTransitionEnded() {
         transitionEnded = true;
     }
-
 
     (function run(i) {
         notify("info", '<div class="monospaced">' + formal[i] + '</div>', null, 2000);
@@ -2392,7 +2411,7 @@ function simulate(formal) {
                     } else if(!result.successful && result.instruction === "verify") {
                         notify("error", 'Verification failed! We are not at the correct destination! Complete instruction was:<br /><div class="monospaced">' + formal[i - 1] + '</div>', null, 4000);
                     } else if(result.successful && result.instruction === "verify") {
-                        notify("info", "Verification successful! We are the correct destination!", null, 4000);
+                        notify("info", "Verification successful! We are at the correct destination!", null, 4000);
                     } else if(i < formal.length) {
                         run(i);
                     }
@@ -2403,26 +2422,82 @@ function simulate(formal) {
 }
 
 function translate() {
-    var template = "Loutput=.\\resources\\nl2kr\\trained.txt" +
-            "ccg=S/S\n" +
-            "function=\n" +
-            "Tdictionary=.\\resources\nl2kr\\trained.txt\n" +
-            "Ldictionary=.\\resources\nl2kr\\dict.txt\n" +
-            "sentence={SENTENCE}\n" +
-            "Lsyntax=.\\resources\nl2kr\\syntax.txt\n" +
-            "inverse_function_output=\n" +
-            "argument=\n" +
-            "inverse_function=\n" +
-            "syntaxFile=.\\resources\nl2kr\\syntax.txt\n" +
-            "inverse_argument=\n" +
-            "lexicon=.\\resources\nl2kr\\dict.txt\n" +
-            "Tdata=.\\resources\nl2kr\\train.txt\n" +
-            "word=List\n" +
-            "batchSentences=\n" +
-            "Tsyntax=.\\resources\nl2kr\\syntax.txt\n" +
-            "Ldata=.\\resources\nl2kr\\train.txt";
+    toggle = true;
+    toggleNatural();
+    var instructions = document.getElementById("instructions").value.split(/ and |\. |, |\n/);
 
-    var instructions = document.getElementById("instructions").value;
+
+
+    var fs = require('fs');
+    fs.writeFile("./resources/nl2kr/test.txt", instructions.map(function(s) { return s.trim(); }).join("\n"));
+
+    var translations = [];
+    var spawn = require('child_process').spawn;
+    var translator = spawn("./NL2KR-T.sh", ["nlp-navigation-config"]);
+    translator.stdout.on("data", function(data) {
+        var stdout = data.toString("utf8");
+        stdout.replace(/\n$/, "").split("\n").forEach(function(line) {
+            console.log(line);
+
+            if(/Parsing sentence \d+/.test(line)) {
+                translations.push([]);
+                i++;
+
+                showDialogMessage("Translating sentence #" + (i + 1) + ": \"" + line.replace(/^.*: /, "") + "\"...");
+            } else if(/Predicted result #\d+/.test(line)) {
+                translations[i].push(line.replace(/^.*: /, ""));
+                showDialogMessage('Adding predicted result #' + translations[i].length + ' for sentence #' + (i + 1) + ':<br /><div class="monospaced" style="display: inline-block">' + line.replace(/^.*: /, "") + '</div>');
+            }
+        });
+    });
+
+    var i = -1;
+    translator.stderr.on("data", function(data) {
+        var line = data.toString("utf8");
+        console.log(line);
+    });
+
+    translator.on("close", function(code) {
+        closeDialog();
+
+        var invalidTranslations = {};
+        var formal = [];
+        var j = 0;
+        var error = translations.reduce(function(error, predictions) {
+            var found = false;
+            var i = 0;
+            while(i < predictions.length && !found) {
+                try {
+                    parser.parse(predictions[i]);
+                    found = true;
+                    formal.push(predictions[i]);
+                } catch(e) {
+                    console.log(predictions[i], " is not a valid prediction for sentence #" + j);
+                }
+
+                i++;
+            }
+
+            if(!found) {
+                invalidTranslations[j] = true;
+            }
+
+            j++;
+            return !found || error;
+        }, false);
+
+        if(error) {
+            notify(
+                "error", "Unable to run simulation, because the following sentences didn't have valid translations:<br /><br />" + Object.keys(invalidTranslations).map(function(i) {
+                    return instructions[i];
+                }).join("<br />"),
+                null,
+                6000
+            );
+        } else {
+            simulate(formal);
+        }
+    });
 }
 
 function notify(type, message, monospaced, time) {
@@ -2454,6 +2529,30 @@ function notify(type, message, monospaced, time) {
         status.style.opacity = 0;
         status.style.zIndex = -1;
     }, time || 3000);
+}
+
+function showDialogMessage(message) {
+    var vWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    var vHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    var status = document.getElementById("status");
+    status.innerHTML = message;
+
+    var rect = status.getBoundingClientRect();
+
+    status.className = "interface info";
+
+    status.style.opacity = 1;
+    status.style.top = ((vHeight - rect.height) / 2) + "px";
+    status.style.left = ((vWidth - rect.width) / 2) + "px";
+    status.style.zIndex = 5;
+}
+
+function closeDialog() {
+    var status = document.getElementById("status");
+
+    status.style.opacity = 0;
+    status.style.zIndex = -1;
 }
 
 function toggleNatural() {

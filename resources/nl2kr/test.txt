@@ -1,0 +1,6 @@
+walk until the red door is to your left
+turn right
+move 5 steps
+with the blue wall on your right
+move until you are by a lamp
+there should be a modern painting to the left of you.
